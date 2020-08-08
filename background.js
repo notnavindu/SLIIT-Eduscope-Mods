@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.classList.add("--eduscope-mod-disabled");
       document.getElementById("eduscope-mod-error").innerHTML = "Only works in lecturecapture.sliit.lk";
     } else {
-      // set saved values
+      // get saved values
       var savedPlaybackSpeed = window.localStorage.getItem("savedPlaybackSpeed");
       var savedScroll = window.localStorage.getItem("savedScroll");
       var savedHeader = window.localStorage.getItem("savedHeader");

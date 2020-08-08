@@ -27,7 +27,14 @@
   pointer-events: none;
   opacity: 0.5;
 }
-/* SELECTOR */
+.--eduscope-mod-link {
+  color: #004b8c;
+}
+.--eduscope-mod-link:hover {
+  color: #0388fc;
+}
+
+/* SELECTORS */
 .--eduscope-mod-radio-toolbar {
   margin: 5px;
 }

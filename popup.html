@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" class="--eduscope-mod-html">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="background.css" />
+  </head>
+  <body class="--eduscope-mod-body">
+    <h1>SLIIT Eduscope Mod</h1>
+    <h5 id="eduscope-mod-error"></h5>
+
+    <div class="--eduscope-mod-options-container">
+      <!-- Playback Speed -->
+      <div id="speed-container">
+        <span> Playback Speed</span>
+        <div class="--eduscope-mod-radio-toolbar">
+          <input type="radio" id="0.5xSpeed" name="speed" value="0.5" />
+          <label for="0.5xSpeed">0.5x</label>
+
+          <input type="radio" id="1xSpeed" name="speed" value="1" />
+          <label for="1xSpeed">1x</label>
+
+          <input type="radio" id="2xSpeed" name="speed" value="2" />
+          <label for="2xSpeed">2x</label>
+
+          <input type="radio" id="6xSpeed" name="speed" value="6" />
+          <label for="6xSpeed">6x</label>
+        </div>
+
+        <div class="--eduscope-mod-option-subtitle" id="eduscope-mod-option-subtitle"></div>
+      </div>
+      <br />
+
+      <!-- Spacebar Scroll Disable -->
+      <div>
+        <span> Disable Spacebar Scroll </span>
+        <div class="--eduscope-mod-radio-toolbar">
+          <input type="radio" id="scroll-0" name="scroll" value="0" />
+          <label for="scroll-0">OFF</label>
+
+          <input type="radio" id="scroll-1" name="scroll" value="1" />
+          <label for="scroll-1">ON</label>
+        </div>
+        <div class="--eduscope-mod-option-subtitle" id="eduscope-mod-option-scroll-subtitle"></div>
+      </div>
+    </div>
+
+    <br /><br />
+    <div class="footer">
+      Version 1.0
+    </div>
+
+    <script src="background.js"></script>
+  </body>
+</html>

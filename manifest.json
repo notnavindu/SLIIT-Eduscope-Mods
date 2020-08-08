@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "SLIIT Eduscope Mod",
+  "version": "1.0.0",
+  "description": "This is a sample description",
+  "short_name": "Eduscope Mod",
+  "permissions": ["activeTab", "declarativeContent", "storage", "*://lecturecapture.sliit.lk/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://lecturecapture.sliit.lk/*"],
+      "css": ["background.css"],
+      "js": ["background.js"]
+    }
+  ],
+  "browser_action": {
+    "default_title": "Does a thing when you do a thing",
+    "default_popup": "popup.html"
+  }
+}

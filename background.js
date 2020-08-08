@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // set saved values
       var savedPlaybackSpeed = window.localStorage.getItem("savedPlaybackSpeed");
       var savedScroll = window.localStorage.getItem("savedScroll");
+      var savedHeader = window.localStorage.getItem("savedHeader");
 
       // set saved options
       if (savedPlaybackSpeed) {
@@ -19,9 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
         setScroll(savedScroll);
       }
 
+      if (savedHeader) {
+        setHeader(savedHeader);
+      }
+
       // get input elements
       let speedOptions = document.getElementsByName("speed");
       let scrollOptions = document.getElementsByName("scroll");
+      let headerOptions = document.getElementsByName("header");
 
       //add onclick handlers
       //speed
@@ -32,6 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
       //scroll
       Array.prototype.forEach.call(scrollOptions, function (radio) {
         radio.addEventListener("change", onScrollOptionChange);
+      });
+
+      //header
+      Array.prototype.forEach.call(headerOptions, function (radio) {
+        radio.addEventListener("change", onHeaderOptionChange);
       });
     }
   });
@@ -62,6 +73,14 @@ function onScrollOptionChange() {
   window.localStorage.setItem("savedScroll", this.value);
 }
 
+function onHeaderOptionChange() {
+  console.log("test");
+  //set speed
+  setHeader(this.value);
+  // save to local storage
+  window.localStorage.setItem("savedHeader", this.value);
+}
+
 // set playback speed
 function setPlaybackSpeed(speed) {
   setSpeedSubtitle(speed);
@@ -90,6 +109,21 @@ function setScroll(state) {
   }
 
   document.getElementById(`scroll-${state}`).checked = true;
+}
+
+// show and hide the header
+function setHeader(state) {
+  if (state == 0) {
+    chrome.tabs.executeScript({
+      code: ` document.getElementById("navbar").style.display = "block"; `,
+    });
+  } else {
+    chrome.tabs.executeScript({
+      code: ` document.getElementById("navbar").style.display = "none"; `,
+    });
+  }
+
+  document.getElementById(`header-${state}`).checked = true;
 }
 
 function setSpeedSubtitle(val) {

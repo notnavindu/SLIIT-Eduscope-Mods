@@ -20,6 +20,7 @@
   text-align: center;
 }
 .--eduscope-mod-option-subtitle {
+  margin-top: -10px;
   font-size: 90%;
   color: #0073d6;
 }
@@ -47,6 +48,8 @@
 
 .--eduscope-mod-radio-toolbar label {
   display: inline-block;
+  width: 30px;
+  margin-bottom: 10px;
   background-color: #000;
   padding: 10px 20px;
   font-size: 16px;

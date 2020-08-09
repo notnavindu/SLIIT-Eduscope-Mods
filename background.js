@@ -128,9 +128,10 @@ function setHeader(state) {
 
 function setSpeedSubtitle(val) {
   let texts = {
-    0.5: "Kids",
-    1: "Men",
-    2: "Legends",
+    1: "Kids",
+    1.25: "Men",
+    1.5: "Legends",
+    2: "Ultra Legends",
     6: "Rap God",
   };
   document.getElementById("eduscope-mod-option-subtitle").innerHTML = texts[val];

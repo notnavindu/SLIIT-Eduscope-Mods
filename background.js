@@ -128,9 +128,10 @@ function setHeader(state) {
 
 function setSpeedSubtitle(val) {
   let texts = {
-    1: "Kids",
-    1.25: "Men",
-    1.5: "Legends",
+    1: "Noobs",
+    1.25: "Kids",
+    1.5: "Men",
+    1.75: "Legends",
     2: "Ultra Legends",
     6: "Rap God",
   };

@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
       var savedPlaybackSpeed = window.localStorage.getItem("savedPlaybackSpeed");
       var savedScroll = window.localStorage.getItem("savedScroll");
       var savedHeader = window.localStorage.getItem("savedHeader");
+      var savedDark = window.localStorage.getItem("savedDark");
 
       // set saved options
       if (savedPlaybackSpeed) {
@@ -23,11 +24,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (savedHeader) {
         setHeader(savedHeader);
       }
-
+      if (savedDark) {
+        setDark(savedDark);
+      }
       // get input elements
       let speedOptions = document.getElementsByName("speed");
       let scrollOptions = document.getElementsByName("scroll");
       let headerOptions = document.getElementsByName("header");
+      let darkOptions = document.getElementsByName("dark");
 
       //add onclick handlers
       //speed
@@ -43,6 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
       //header
       Array.prototype.forEach.call(headerOptions, function (radio) {
         radio.addEventListener("change", onHeaderOptionChange);
+      });
+
+      //DarkMode
+      Array.prototype.forEach.call(darkOptions, function (radio) {
+        radio.addEventListener("change", onDarkOptionChange);
       });
     }
   });
@@ -136,4 +145,59 @@ function setSpeedSubtitle(val) {
     6: "Rap God",
   };
   document.getElementById("eduscope-mod-option-subtitle").innerHTML = texts[val];
+}
+
+function setDark(state){
+  if(state==0){
+    chrome.tabs.executeScript({
+      code: `
+        document.body.classList.remove("dark-mode");
+  
+        if(document.querySelector(".boxview")!=null){
+          var x=document.querySelectorAll(".boxview");
+          for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("dark-mode");
+          }
+        }
+  
+        var l=document.getElementsByTagName('label');
+        for (var i = 0; i < l.length; i++) {
+          l[i].classList.remove("dark-mode");
+        }
+  
+        if(document.querySelector(".main-div")!=null){
+          document.querySelector(".main-div").classList.remove("dark-mode");
+        }
+      `,
+    });
+  }else{
+    chrome.tabs.executeScript({
+      code: `
+        document.body.classList.toggle("dark-mode");
+  
+        if(document.querySelector(".boxview")!=null){
+          var x=document.querySelectorAll(".boxview");
+          for (var i = 0; i < x.length; i++) {
+            x[i].classList.toggle("dark-mode");
+          }
+        }
+
+        var l=document.getElementsByTagName('label');
+        for (var i = 0; i < l.length; i++) {
+          l[i].classList.toggle("dark-mode");
+        }
+  
+        if(document.querySelector(".main-div")!=null){
+          document.querySelector(".main-div").classList.toggle("dark-mode");
+        }
+      `,
+    });
+  }
+
+  document.getElementById(`dark-${state}`).checked = true;
+}
+function onDarkOptionChange() {
+  setDark(this.value);
+  // save to local storage
+  window.localStorage.setItem("savedDark", this.value);
 }

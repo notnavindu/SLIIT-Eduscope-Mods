@@ -71,3 +71,10 @@
 }
 
 /* END SELECTOR STYLES*/
+
+/*Dark mode styles*/
+
+.dark-mode{
+  background-color: #000000  !important;
+  color: white;
+}

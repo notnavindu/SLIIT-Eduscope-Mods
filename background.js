@@ -173,22 +173,22 @@ function setDark(state){
   }else{
     chrome.tabs.executeScript({
       code: `
-        document.body.classList.toggle("dark-mode");
+        document.body.classList.add("dark-mode");
   
         if(document.querySelector(".boxview")!=null){
           var x=document.querySelectorAll(".boxview");
           for (var i = 0; i < x.length; i++) {
-            x[i].classList.toggle("dark-mode");
+            x[i].classList.add("dark-mode");
           }
         }
 
         var l=document.getElementsByTagName('label');
         for (var i = 0; i < l.length; i++) {
-          l[i].classList.toggle("dark-mode");
+          l[i].classList.add("dark-mode");
         }
   
         if(document.querySelector(".main-div")!=null){
-          document.querySelector(".main-div").classList.toggle("dark-mode");
+          document.querySelector(".main-div").classList.add("dark-mode");
         }
       `,
     });

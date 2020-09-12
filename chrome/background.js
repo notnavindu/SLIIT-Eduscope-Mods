@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       var savedScroll = window.localStorage.getItem("savedScroll");
       var savedHeader = window.localStorage.getItem("savedHeader");
       var savedDark = window.localStorage.getItem("savedDark");
+      var savedTweaks = window.localStorage.getItem("savedTweaks");
 
       // set saved options
       if (savedPlaybackSpeed) {
@@ -27,11 +28,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (savedDark) {
         setDark(savedDark);
       }
+
+      if (savedTweaks) {
+        setTweaks(savedTweaks);
+      }
       // get input elements
       let speedOptions = document.getElementsByName("speed");
       let scrollOptions = document.getElementsByName("scroll");
       let headerOptions = document.getElementsByName("header");
       let darkOptions = document.getElementsByName("dark");
+      let tweaksOptions = document.getElementsByName("tweaks");
 
       //add onclick handlers
       //speed
@@ -52,6 +58,11 @@ document.addEventListener("DOMContentLoaded", () => {
       //DarkMode
       Array.prototype.forEach.call(darkOptions, function (radio) {
         radio.addEventListener("change", onDarkOptionChange);
+      });
+
+      //UI Tweaks
+      Array.prototype.forEach.call(tweaksOptions, function (radio) {
+        radio.addEventListener("change", onTweaksOptionChange);
       });
     }
   });
@@ -88,6 +99,28 @@ function onHeaderOptionChange() {
   setHeader(this.value);
   // save to local storage
   window.localStorage.setItem("savedHeader", this.value);
+}
+
+function onDarkOptionChange() {
+  setDark(this.value);
+  // save to local storage
+  window.localStorage.setItem("savedDark", this.value);
+}
+
+function onTweaksOptionChange() {
+  setTweaks(this.value);
+
+  if (this.value == 0) {
+    // request page refresh
+    document.getElementById("eduscope-mod-option-scroll-subtitle").innerHTML = "Page Refresh Required";
+
+    // TODO Find a way to remove event handlers with extensions
+  } else {
+    document.getElementById("eduscope-mod-option-scroll-subtitle").innerHTML = "";
+  }
+
+  // save to local storage
+  window.localStorage.setItem("savedTweaks", this.value);
 }
 
 // set playback speed
@@ -147,8 +180,9 @@ function setSpeedSubtitle(val) {
   document.getElementById("eduscope-mod-option-subtitle").innerHTML = texts[val];
 }
 
-function setDark(state){
-  if(state==0){
+// set dark theme
+function setDark(state) {
+  if (state == 0) {
     chrome.tabs.executeScript({
       code: `
         document.body.classList.remove("dark-mode");
@@ -160,17 +194,25 @@ function setDark(state){
           }
         }
   
-        var l=document.getElementsByTagName('label');
+        var l = document.getElementsByTagName('label');
         for (var i = 0; i < l.length; i++) {
           l[i].classList.remove("dark-mode");
+        }
+
+        var hr = document.getElementsByTagName('hr');
+        for (var i = 0; i < hr.length; i++) {
+          hr[i].style.borderTop = "1px solid #eee";
         }
   
         if(document.querySelector(".main-div")!=null){
           document.querySelector(".main-div").classList.remove("dark-mode");
         }
+
+        document.getElementById("comment").classList.remove("dark-textarea");
+        document.getElementById("comment").classList.add("form-control");
       `,
     });
-  }else{
+  } else {
     chrome.tabs.executeScript({
       code: `
         document.body.classList.add("dark-mode");
@@ -182,22 +224,64 @@ function setDark(state){
           }
         }
 
-        var l=document.getElementsByTagName('label');
+        var l = document.getElementsByTagName('label');
         for (var i = 0; i < l.length; i++) {
           l[i].classList.add("dark-mode");
+        }
+
+        var hr = document.getElementsByTagName('hr');
+        for (var i = 0; i < hr.length; i++) {
+          hr[i].style.borderTop = "1px solid #0388fc";
         }
   
         if(document.querySelector(".main-div")!=null){
           document.querySelector(".main-div").classList.add("dark-mode");
         }
+
+        document.getElementById("comment").classList.add("dark-textarea");
+        document.getElementById("comment").style.width="100%";
+        document.getElementById("comment").style.padding="10px";
+        document.getElementById("comment").style.height="100px";
+        document.getElementById("comment").classList.remove("form-control");
       `,
     });
   }
 
   document.getElementById(`dark-${state}`).checked = true;
 }
-function onDarkOptionChange() {
-  setDark(this.value);
-  // save to local storage
-  window.localStorage.setItem("savedDark", this.value);
+
+// set UI Tweaks
+function setTweaks(state) {
+  if (state == 0) {
+    console.log("off");
+  } else {
+    // the eplayer is inside an iframe. access it accordingly
+    chrome.tabs.executeScript({
+      code: `
+      document.getElementsByTagName("body")[0].style.fontFamily = "Arial"; 
+
+      controlBar = document.getElementById("eplayer_iframe").contentWindow.document.querySelector(".video-react-control-bar-auto-hide");
+      controlBar.style.height = "45px";
+      controlBar.style.fontSize = "1.4em";
+      controlBar.style.marginBottom = "15px";
+      controlBar.style.backgroundColor = "#121212";
+      controlBar.style.opacity = "0.9";
+      controlBar.style.borderRadius = "7px";
+      controlBar.style.border = "1px solid #0388fc";
+      
+      // comment button
+      document.getElementById("comment_submit").style.borderRadius = "7px";
+      document.getElementById("comment_submit").style.marginTop = "15px";
+      document.getElementById("comment_submit").style.backgroundColor = "#121212";
+      document.getElementById("comment_submit").style.border = "2px solid #0388fc";
+
+      // video frame
+      document.getElementById("eplayer_iframe").style.border = "2px solid #002647";
+      document.getElementById("eplayer_iframe").contentWindow.document.documentElement.style.backgroundColor = "#121212";
+
+      `,
+    });
+  }
+
+  document.getElementById(`tweaks-${state}`).checked = true;
 }

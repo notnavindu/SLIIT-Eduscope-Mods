@@ -112,11 +112,11 @@ function onTweaksOptionChange() {
 
   if (this.value == 0) {
     // request page refresh
-    document.getElementById("eduscope-mod-option-scroll-subtitle").innerHTML = "Page Refresh Required";
+    document.getElementById("eduscope-mod-option-tweaks-subtitle").innerHTML = "Page Refresh Required";
 
     // TODO Find a way to remove event handlers with extensions
   } else {
-    document.getElementById("eduscope-mod-option-scroll-subtitle").innerHTML = "";
+    document.getElementById("eduscope-mod-option-tweaks-subtitle").innerHTML = "";
   }
 
   // save to local storage
@@ -128,7 +128,7 @@ function setPlaybackSpeed(speed) {
   setSpeedSubtitle(speed);
   //set speed
   chrome.tabs.executeScript({
-    code: ` videoElements = document.getElementsByTagName("video");
+    code: ` videoElements = document.getElementById("eplayer_iframe").contentWindow.document.getElementsByTagName("video");
             Array.prototype.forEach.call(videoElements, function (elm) {
                 elm.playbackRate = ${speed};
             });`,
@@ -175,7 +175,10 @@ function setSpeedSubtitle(val) {
     1.5: "Men",
     1.75: "Legends",
     2: "Ultra Legends",
+    2.5: "Ultra Legend Pro",
+    3: "Ultra Legend Pro Max",
     6: "Rap God",
+    16: "Yeah, Life is short",
   };
   document.getElementById("eduscope-mod-option-subtitle").innerHTML = texts[val];
 }
@@ -268,7 +271,7 @@ function setTweaks(state) {
       controlBar.style.opacity = "0.9";
       controlBar.style.borderRadius = "7px";
       controlBar.style.border = "1px solid #0388fc";
-      
+    
       // comment button
       document.getElementById("comment_submit").style.borderRadius = "7px";
       document.getElementById("comment_submit").style.marginTop = "15px";
@@ -276,8 +279,24 @@ function setTweaks(state) {
       document.getElementById("comment_submit").style.border = "2px solid #0388fc";
 
       // video frame
-      document.getElementById("eplayer_iframe").style.border = "2px solid #002647";
-      document.getElementById("eplayer_iframe").contentWindow.document.documentElement.style.backgroundColor = "#121212";
+      eplayer = document.getElementById("eplayer_iframe");
+      eplayer.style.border = "2px solid #002647";
+      eplayer.contentWindow.document.documentElement.style.backgroundColor = "#121212";
+
+      // handle mouse over
+      player = document.getElementById("eplayer_iframe").contentWindow.document.querySelector(".video-react-control-bar-auto-hide")
+      eplayer.onmouseover = eplayer.onmouseout = handler;
+
+      function handler(event) {
+        console.log("S")
+        controlBar = document.getElementById("eplayer_iframe").contentWindow.document.querySelector(".video-react-control-bar-auto-hide");
+        if (event.type == 'mouseover') {
+          controlBar.style.opacity = 0.9;
+        }
+        if (event.type == 'mouseout') {
+          controlBar.style.opacity = 0;
+        }
+      }
 
       `,
     });

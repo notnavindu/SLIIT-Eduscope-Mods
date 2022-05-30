@@ -1,83 +1,96 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // check if user is in the eduscope website
-  chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-    let pageUrl = tabs[0].url;
-    if (!pageUrl.includes("lecturecapture.sliit.lk")) {
-      document.body.classList.add("--eduscope-mod-disabled");
-      document.getElementById("eduscope-mod-error").innerHTML = "Only works in lecturecapture.sliit.lk";
-    } else {
-      // get saved values
-      var savedPlaybackSpeed = window.localStorage.getItem("savedPlaybackSpeed");
-      var savedScroll = window.localStorage.getItem("savedScroll");
-      var savedHeader = window.localStorage.getItem("savedHeader");
-      var savedDark = window.localStorage.getItem("savedDark");
-      var savedTweaks = window.localStorage.getItem("savedTweaks");
-
-      // set saved options
-      if (savedPlaybackSpeed) {
-        setPlaybackSpeed(savedPlaybackSpeed);
-      }
-
-      if (savedScroll) {
-        setScroll(savedScroll);
-      }
-
-      if (savedHeader) {
-        setHeader(savedHeader);
-      }
-      if (savedDark) {
-        setDark(savedDark);
-      }
-
-      if (savedTweaks) {
-        setTweaks(savedTweaks);
-      }
-      // get input elements
-      let speedOptions = document.getElementsByName("speed");
-      let scrollOptions = document.getElementsByName("scroll");
-      let headerOptions = document.getElementsByName("header");
-      let darkOptions = document.getElementsByName("dark");
-      let tweaksOptions = document.getElementsByName("tweaks");
-
-      //add onclick handlers
-      //speed
-      Array.prototype.forEach.call(speedOptions, function (radio) {
-        radio.addEventListener("change", onSpeedOptionChange);
-      });
-
-      //scroll
-      Array.prototype.forEach.call(scrollOptions, function (radio) {
-        radio.addEventListener("change", onScrollOptionChange);
-      });
-
-      //header
-      Array.prototype.forEach.call(headerOptions, function (radio) {
-        radio.addEventListener("change", onHeaderOptionChange);
-      });
-
-      //DarkMode
-      Array.prototype.forEach.call(darkOptions, function (radio) {
-        radio.addEventListener("change", onDarkOptionChange);
-      });
-
-      //UI Tweaks
-      Array.prototype.forEach.call(tweaksOptions, function (radio) {
-        radio.addEventListener("change", onTweaksOptionChange);
-      });
-    }
-  });
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("will this work")
+  setupUI()
 });
 
+
+// check if user is in the eduscope website
+async function setupUI() {
+  let tabs = await chrome.tabs.query({ active: true });
+
+  let pageUrl = tabs[0].url;
+
+  if (!pageUrl.includes("lecturecapture.sliit.lk")) {
+    document.body.classList.add("--eduscope-mod-disabled");
+    document.getElementById("eduscope-mod-error").innerHTML = "Only works in lecturecapture.sliit.lk";
+  } else {
+    // get saved values
+    let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed']);
+    let { scroll } = await chrome.storage.sync.get(["scroll"]);
+    let { header } = await chrome.storage.sync.get(["header"]);
+    let { dark } = await chrome.storage.sync.get(["dark"]);
+    let { tweaks } = await chrome.storage.sync.get(["tweaks"]);
+
+    // set saved options
+    if (playbackSpeed) {
+      setPlaybackSpeed(playbackSpeed);
+    }
+
+    if (scroll) {
+      setScroll(scroll);
+    }
+
+    if (header) {
+      setHeader(header);
+    }
+
+    if (dark) {
+      setDark(dark);
+    }
+
+    if (tweaks) {
+      setTweaks(tweaks);
+    }
+
+
+    // get input elements
+    let speedOptions = document.getElementsByName("speed");
+    let scrollOptions = document.getElementsByName("scroll");
+    let headerOptions = document.getElementsByName("header");
+    let darkOptions = document.getElementsByName("dark");
+    let tweaksOptions = document.getElementsByName("tweaks");
+
+    //add onclick handlers
+    //speed
+    Array.prototype.forEach.call(speedOptions, function (radio) {
+      radio.addEventListener("change", onSpeedOptionChange);
+    });
+
+    //scroll
+    Array.prototype.forEach.call(scrollOptions, function (radio) {
+      radio.addEventListener("change", onScrollOptionChange);
+    });
+
+    //header
+    Array.prototype.forEach.call(headerOptions, function (radio) {
+      radio.addEventListener("change", onHeaderOptionChange);
+    });
+
+    //DarkMode
+    Array.prototype.forEach.call(darkOptions, function (radio) {
+      radio.addEventListener("change", onDarkOptionChange);
+    });
+
+    //UI Tweaks
+    Array.prototype.forEach.call(tweaksOptions, function (radio) {
+      radio.addEventListener("change", onTweaksOptionChange);
+    });
+
+  }
+}
+
+
+
 // change video playback speed change handler
-function onSpeedOptionChange() {
+async function onSpeedOptionChange() {
   //set speed
   setPlaybackSpeed(this.value);
-  // save to local storage
-  window.localStorage.setItem("savedPlaybackSpeed", this.value);
+  // save to storage
+  await chrome.storage.sync.set({ "playbackSpeed": this.value })
 }
 
 // change scroll behavior change handler
-function onScrollOptionChange() {
+async function onScrollOptionChange() {
   //set speed
   setScroll(this.value);
   if (this.value == 0) {
@@ -89,25 +102,24 @@ function onScrollOptionChange() {
     document.getElementById("eduscope-mod-option-scroll-subtitle").innerHTML = "";
   }
 
-  // save to local storage
-  window.localStorage.setItem("savedScroll", this.value);
+  // save to storage
+  await chrome.storage.sync.set({ "scroll": this.value })
 }
 
-function onHeaderOptionChange() {
-  console.log("test");
+async function onHeaderOptionChange() {
   //set speed
   setHeader(this.value);
   // save to local storage
-  window.localStorage.setItem("savedHeader", this.value);
+  await chrome.storage.sync.set({ "header": this.value })
 }
 
-function onDarkOptionChange() {
+async function onDarkOptionChange() {
   setDark(this.value);
   // save to local storage
-  window.localStorage.setItem("savedDark", this.value);
+  await chrome.storage.sync.set({ "dark": this.value })
 }
 
-function onTweaksOptionChange() {
+async function onTweaksOptionChange() {
   setTweaks(this.value);
 
   if (this.value == 0) {
@@ -120,33 +132,53 @@ function onTweaksOptionChange() {
   }
 
   // save to local storage
-  window.localStorage.setItem("savedTweaks", this.value);
+  await chrome.storage.sync.set({ "tweaks": this.value })
 }
 
+
+/*
+*
+* ------------------------------ 
+* | Injectors
+* ------------------------------
+*
+*/
+
+
 // set playback speed
-function setPlaybackSpeed(speed) {
+async function setPlaybackSpeed(speed) {
   setSpeedSubtitle(speed);
-  //set speed
-  chrome.tabs.executeScript({
-    code: ` videoElements = document.getElementById("eplayer_iframe").contentWindow.document.getElementsByTagName("video");
-            Array.prototype.forEach.call(videoElements, function (elm) {
-                elm.playbackRate = ${speed};
-            });`,
+
+  let tabs = await chrome.tabs.query({ active: true });
+
+  chrome.scripting.executeScript({
+    target: { tabId: tabs[0].id, allFrames: true },
+    func: function (speed) {
+      videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
+      Array.prototype.forEach.call(videoElements, function (elm) {
+        elm.playbackRate = speed;
+      });
+    },
+    args: [speed]
   });
-  // set 'checked' state. lil hack
+
+  // set 'checked' state.
   document.getElementById(`${speed}xSpeed`).checked = true;
 }
 
 // set scrolling behaviour
-function setScroll(state) {
+async function setScroll(state) {
+  let tabs = await chrome.tabs.query({ active: true });
   if (state == 1) {
-    //set handler
-    chrome.tabs.executeScript({
-      code: ` window.addEventListener('keydown', function(e) {
-                if(e.keyCode == 32 ) {
-                    e.preventDefault();
-                }
-            });`,
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      func: () => {
+        window.addEventListener('keydown', function (e) {
+          if (e.keyCode == 32) {
+            e.preventDefault();
+          }
+        });
+      },
     });
   }
 
@@ -154,21 +186,24 @@ function setScroll(state) {
 }
 
 // show and hide the header
-function setHeader(state) {
+async function setHeader(state) {
+  let tabs = await chrome.tabs.query({ active: true });
   if (state == 0) {
-    chrome.tabs.executeScript({
-      code: ` document.getElementById("navbar").style.display = "block"; `,
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      files: ['./scripts/headerHide.js'],
     });
   } else {
-    chrome.tabs.executeScript({
-      code: ` document.getElementById("navbar").style.display = "none"; `,
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      files: ['./scripts/headerShow.js'],
     });
   }
 
   document.getElementById(`header-${state}`).checked = true;
 }
 
-function setSpeedSubtitle(val) {
+async function setSpeedSubtitle(val) {
   let texts = {
     1: "Noobs",
     1.25: "Kids",
@@ -180,73 +215,22 @@ function setSpeedSubtitle(val) {
     6: "Rap God",
     16: "Yeah, Life is short",
   };
+
   document.getElementById("eduscope-mod-option-subtitle").innerHTML = texts[val];
 }
 
 // set dark theme
-function setDark(state) {
+async function setDark(state) {
+  let tabs = await chrome.tabs.query({ active: true });
   if (state == 0) {
-    chrome.tabs.executeScript({
-      code: `
-        document.body.classList.remove("dark-mode");
-  
-        if(document.querySelector(".boxview")!=null){
-          var x=document.querySelectorAll(".boxview");
-          for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("dark-mode");
-          }
-        }
-  
-        var l = document.getElementsByTagName('label');
-        for (var i = 0; i < l.length; i++) {
-          l[i].classList.remove("dark-mode");
-        }
-
-        var hr = document.getElementsByTagName('hr');
-        for (var i = 0; i < hr.length; i++) {
-          hr[i].style.borderTop = "1px solid #eee";
-        }
-  
-        if(document.querySelector(".main-div")!=null){
-          document.querySelector(".main-div").classList.remove("dark-mode");
-        }
-
-        document.getElementById("comment").classList.remove("dark-textarea");
-        document.getElementById("comment").classList.add("form-control");
-      `,
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      files: ['./scripts/darkThemeRemove.js'],
     });
   } else {
-    chrome.tabs.executeScript({
-      code: `
-        document.body.classList.add("dark-mode");
-  
-        if(document.querySelector(".boxview")!=null){
-          var x=document.querySelectorAll(".boxview");
-          for (var i = 0; i < x.length; i++) {
-            x[i].classList.add("dark-mode");
-          }
-        }
-
-        var l = document.getElementsByTagName('label');
-        for (var i = 0; i < l.length; i++) {
-          l[i].classList.add("dark-mode");
-        }
-
-        var hr = document.getElementsByTagName('hr');
-        for (var i = 0; i < hr.length; i++) {
-          hr[i].style.borderTop = "1px solid #0388fc";
-        }
-  
-        if(document.querySelector(".main-div")!=null){
-          document.querySelector(".main-div").classList.add("dark-mode");
-        }
-
-        document.getElementById("comment").classList.add("dark-textarea");
-        document.getElementById("comment").style.width="100%";
-        document.getElementById("comment").style.padding="10px";
-        document.getElementById("comment").style.height="100px";
-        document.getElementById("comment").classList.remove("form-control");
-      `,
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      files: ['./scripts/darkThemeSet.js'],
     });
   }
 
@@ -254,51 +238,15 @@ function setDark(state) {
 }
 
 // set UI Tweaks
-function setTweaks(state) {
+async function setTweaks(state) {
+  let tabs = await chrome.tabs.query({ active: true });
+
   if (state == 0) {
     console.log("off");
   } else {
-    // the eplayer is inside an iframe. access it accordingly
-    chrome.tabs.executeScript({
-      code: `
-      document.getElementsByTagName("body")[0].style.fontFamily = "Arial"; 
-
-      controlBar = document.getElementById("eplayer_iframe").contentWindow.document.querySelector(".video-react-control-bar-auto-hide");
-      controlBar.style.height = "45px";
-      controlBar.style.fontSize = "1.4em";
-      controlBar.style.marginBottom = "15px";
-      controlBar.style.backgroundColor = "#121212";
-      controlBar.style.opacity = "0.9";
-      controlBar.style.borderRadius = "7px";
-      controlBar.style.border = "1px solid #0388fc";
-    
-      // comment button
-      document.getElementById("comment_submit").style.borderRadius = "7px";
-      document.getElementById("comment_submit").style.marginTop = "15px";
-      document.getElementById("comment_submit").style.backgroundColor = "#121212";
-      document.getElementById("comment_submit").style.border = "2px solid #0388fc";
-
-      // video frame
-      eplayer = document.getElementById("eplayer_iframe");
-      eplayer.style.border = "2px solid #002647";
-      eplayer.contentWindow.document.documentElement.style.backgroundColor = "#121212";
-
-      // handle mouse over
-      player = document.getElementById("eplayer_iframe").contentWindow.document.querySelector(".video-react-control-bar-auto-hide")
-      eplayer.onmouseover = eplayer.onmouseout = handler;
-
-      function handler(event) {
-        console.log("S")
-        controlBar = document.getElementById("eplayer_iframe").contentWindow.document.querySelector(".video-react-control-bar-auto-hide");
-        if (event.type == 'mouseover') {
-          controlBar.style.opacity = 0.9;
-        }
-        if (event.type == 'mouseout') {
-          controlBar.style.opacity = 0;
-        }
-      }
-
-      `,
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      files: ['./scripts/tweaksSet.js'],
     });
   }
 

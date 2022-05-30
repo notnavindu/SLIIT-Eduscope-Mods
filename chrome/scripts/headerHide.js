@@ -1,1 +1,3 @@
-document.getElementById("navbar").style.display = "none";
+if (document.getElementById("navbar")) {
+    document.getElementById("navbar").style.display = "none";
+}

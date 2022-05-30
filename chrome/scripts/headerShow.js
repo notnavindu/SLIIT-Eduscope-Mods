@@ -1,5 +1,3 @@
-let navbar = document.getElementById("navbar")
-
-if (navbar) {
-    navbar.style.display = "block";
+if (document.getElementById("navbar")) {
+    document.getElementById("navbar").style.display = "block";
 }

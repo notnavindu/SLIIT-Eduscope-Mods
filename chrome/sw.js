@@ -9,12 +9,13 @@ async function init() {
 
     if (tabs[0].url.includes("lecturecapture.sliit.lk")) {
         // get saved values
-        let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed']);
+        let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed'])
         let { scroll } = await chrome.storage.sync.get(["scroll"]);
         let { header } = await chrome.storage.sync.get(["header"]);
         let { dark } = await chrome.storage.sync.get(["dark"]);
         let { tweaks } = await chrome.storage.sync.get(["tweaks"]);
 
+        console.log("speed", playbackSpeed)
         //  set saved options
         if (playbackSpeed) {
             setPlaybackSpeed(playbackSpeed);
@@ -53,11 +54,11 @@ async function setPlaybackSpeed(speed) {
 
     chrome.scripting.executeScript({
         target: { tabId: tabs[0].id, allFrames: true },
-        func: function (speed) {
+        func: function (speed2) {
             videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
+            console.log(videoElements)
             Array.prototype.forEach.call(videoElements, function (elm) {
-                elm.playbackRate = speed;
-                elm.play()
+                elm.playbackRate = speed2;
             });
         },
         args: [speed]
@@ -142,16 +143,19 @@ chrome.runtime.onConnect.addListener(async (port) => {
     console.log("time", currentTime)
     // port.postMessage({ timestamp: currentTime })
 
-    chrome.scripting.executeScript({
-        target: { tabId: port.sender.tab.id, allFrames: true },
-        func: function (time) {
-            videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
-            Array.prototype.forEach.call(videoElements, function (elm) {
-                elm.currentTime = time
-            });
-        },
-        args: [currentTime]
-    });
+    if (currentTime) {
+        chrome.scripting.executeScript({
+            target: { tabId: port.sender.tab.id, allFrames: true },
+            func: function (time) {
+                videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
+                Array.prototype.forEach.call(videoElements, function (elm) {
+                    elm.play()
+                    elm.currentTime = time;
+                });
+            },
+            args: [currentTime]
+        });
+    }
 
     port.onMessage.addListener(async (msg) => {
         if (msg.currentTime) {

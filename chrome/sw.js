@@ -9,24 +9,13 @@ async function init() {
 
     if (tabs[0].url.includes("lecturecapture.sliit.lk")) {
         // get saved values
-        let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed'])
         let { scroll } = await chrome.storage.sync.get(["scroll"]);
-        let { header } = await chrome.storage.sync.get(["header"]);
         let { dark } = await chrome.storage.sync.get(["dark"]);
         let { tweaks } = await chrome.storage.sync.get(["tweaks"]);
-
-        console.log("speed", playbackSpeed)
-        //  set saved options
-        if (playbackSpeed) {
-            setPlaybackSpeed(playbackSpeed);
-        }
+        let { theater } = await chrome.storage.sync.get(["theater"]);
 
         if (scroll) {
             setScroll(scroll);
-        }
-
-        if (header) {
-            setHeader(header);
         }
 
         if (dark) {
@@ -35,6 +24,10 @@ async function init() {
 
         if (tweaks) {
             setTweaks(tweaks);
+        }
+
+        if (theater) {
+            setTheaterMode(theater);
         }
     }
 }
@@ -47,7 +40,6 @@ async function init() {
 *
 */
 
-
 // set playback speed
 async function setPlaybackSpeed(speed) {
     let tabs = await chrome.tabs.query({ active: true });
@@ -56,7 +48,6 @@ async function setPlaybackSpeed(speed) {
         target: { tabId: tabs[0].id, allFrames: true },
         func: function (speed2) {
             videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
-            console.log(videoElements)
             Array.prototype.forEach.call(videoElements, function (elm) {
                 elm.playbackRate = speed2;
             });
@@ -78,22 +69,6 @@ async function setScroll(state) {
                     }
                 });
             },
-        });
-    }
-}
-
-// show and hide the header
-async function setHeader(state) {
-    let tabs = await chrome.tabs.query({ active: true });
-    if (state == 0) {
-        chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id, allFrames: true },
-            files: ['./scripts/headerHide.js'],
-        });
-    } else {
-        chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id, allFrames: true },
-            files: ['./scripts/headerShow.js'],
         });
     }
 }
@@ -128,6 +103,23 @@ async function setTweaks(state) {
     }
 }
 
+// set Theater mode
+async function setTheaterMode(state) {
+    let tabs = await chrome.tabs.query({ active: true });
+
+    if (state == 0) {
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id, allFrames: true },
+            files: ['./scripts/theaterRemove.js'],
+        });
+    } else {
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id, allFrames: true },
+            files: ['./scripts/theaterSet.js'],
+        });
+    }
+}
+
 /*
 *
 * ------------------------------ 
@@ -137,31 +129,39 @@ async function setTweaks(state) {
 */
 
 chrome.runtime.onConnect.addListener(async (port) => {
-    // send back saved time
-    console.log(port.sender.tab.id)
-    let { currentTime } = await chrome.storage.sync.get(['currentTime']);
-    console.log("time", currentTime)
-    // port.postMessage({ timestamp: currentTime })
+    // get saved time and playback speed
+    let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed'])
 
-    if (currentTime) {
-        chrome.scripting.executeScript({
-            target: { tabId: port.sender.tab.id, allFrames: true },
-            func: function (time) {
-                videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
-                Array.prototype.forEach.call(videoElements, function (elm) {
-                    elm.play()
+    let url = new URL(port.sender.url)
+    let videoId = url.searchParams.get("id");
+    let savedTime = (await chrome.storage.local.get([`${videoId}`]))[`${videoId}`];
+
+    console.log("setting...", savedTime, playbackSpeed)
+    chrome.scripting.executeScript({
+        target: { tabId: port.sender.tab.id, allFrames: true },
+        func: function (time, speed) {
+            videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
+            Array.prototype.forEach.call(videoElements, function (elm) {
+                let playPromise = elm.play()
+                if (playPromise !== undefined) {
                     elm.currentTime = time;
-                });
-            },
-            args: [currentTime]
-        });
-    }
+                    elm.playbackRate = speed;
+                    // elm.pause()
+                }
+            });
+        },
+        args: [savedTime || 1, playbackSpeed || 1]
+    });
+
 
     port.onMessage.addListener(async (msg) => {
         if (msg.currentTime) {
-            console.log(msg.currentTime)
-            await chrome.storage.sync.set({ "currentTime": msg.currentTime })
+            let url = new URL(port.sender.url)
+            let videoId = url.searchParams.get("id");
+            let values = {};
+            values[videoId] = msg.currentTime;
+
+            await chrome.storage.local.set(values)
         }
     });
-
 });

@@ -15,6 +15,9 @@
       <div id="speed-container">
         <span> Playback Speed</span>
         <div class="--eduscope-mod-radio-toolbar">
+          <input type="radio" id="0.5xSpeed" name="speed" value="0.5" />
+          <label for="0.5xSpeed">0.5x</label>
+
           <input type="radio" id="1xSpeed" name="speed" value="1" />
           <label for="1xSpeed">1x</label>
 
@@ -23,17 +26,17 @@
 
           <input type="radio" id="1.5xSpeed" name="speed" value="1.5" />
           <label for="1.5xSpeed">1.5x</label>
-          <br />
+
           <input type="radio" id="1.75xSpeed" name="speed" value="1.75" />
           <label for="1.75xSpeed">1.75x</label>
+
+          <br />
 
           <input type="radio" id="2xSpeed" name="speed" value="2" />
           <label for="2xSpeed">2x</label>
 
           <input type="radio" id="2.5xSpeed" name="speed" value="2.5" />
           <label for="2.5xSpeed">2.5x</label>
-
-          <br />
 
           <input type="radio" id="3xSpeed" name="speed" value="3" />
           <label for="3xSpeed">3x</label>
@@ -50,27 +53,88 @@
           id="eduscope-mod-option-subtitle"
         ></div>
       </div>
+
       <br />
 
-      <!-- Spacebar Scroll Disable -->
-      <div>
-        <span> Spacebar Scroll Disabler</span>
-        <div class="--eduscope-mod-radio-toolbar">
-          <input type="radio" id="scroll-0" name="scroll" value="0" />
-          <label for="scroll-0">OFF</label>
+      <!-- Row 1-->
+      <div class="--eduscope-mod-option-row">
+        <!-- UI Tweaks -->
+        <div style="width: 50%">
+          <span> UI Tweaks </span>
+          <div>
+            <div class="--eduscope-mod-radio-toolbar">
+              <input type="radio" id="tweaks-0" name="tweaks" value="0" />
+              <label for="tweaks-0">OFF</label>
 
-          <input type="radio" id="scroll-1" name="scroll" value="1" />
-          <label for="scroll-1">ON</label>
+              <input type="radio" id="tweaks-1" name="tweaks" value="1" />
+              <label for="tweaks-1">ON</label>
+            </div>
+
+            <div
+              class="--eduscope-mod-option-subtitle"
+              id="eduscope-mod-option-tweaks-subtitle"
+            ></div>
+          </div>
         </div>
-        <div
-          class="--eduscope-mod-option-subtitle"
-          id="eduscope-mod-option-scroll-subtitle"
-        ></div>
+
+        <!-- Dark Mode -->
+        <div style="width: 50%">
+          <span> Dark Mode </span>
+          <div class="--eduscope-mod-radio-toolbar">
+            <input type="radio" id="dark-0" name="dark" value="0" />
+            <label for="dark-0">OFF</label>
+
+            <input type="radio" id="dark-1" name="dark" value="1" />
+            <label for="dark-1">ON</label>
+          </div>
+        </div>
       </div>
+
       <br />
-      <!-- Header Hider -->
-      <div>
-        <span> Header Disabler </span>
+
+      <!-- Row 2 -->
+      <div class="--eduscope-mod-option-row">
+        <!-- Theater mode -->
+        <div style="width: 50%">
+          <span> Theater Mode</span>
+          <div class="--eduscope-mod-radio-toolbar">
+            <input type="radio" id="theater-0" name="theater" value="0" />
+            <label for="theater-0">OFF</label>
+
+            <input type="radio" id="theater-1" name="theater" value="1" />
+            <label for="theater-1">ON</label>
+          </div>
+          <div
+            class="--eduscope-mod-option-subtitle"
+            id="eduscope-mod-option-theater-subtitle"
+          ></div>
+        </div>
+
+        <!-- Spacebar Scroll Disable -->
+        <div style="width: 50%">
+          <span> Disable Spacebar Scroll</span>
+          <div class="--eduscope-mod-radio-toolbar">
+            <input type="radio" id="scroll-0" name="scroll" value="0" />
+            <label for="scroll-0">OFF</label>
+
+            <input type="radio" id="scroll-1" name="scroll" value="1" />
+            <label for="scroll-1">ON</label>
+          </div>
+          <div
+            class="--eduscope-mod-option-subtitle"
+            id="eduscope-mod-option-scroll-subtitle"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <!-- Row 3 -->
+    <div class="--eduscope-mod-option-row">
+      <!-- Header Hider TODO: remove me  -->
+      <!-- <div style="width: 50%">
+        <span> Hide Header </span>
         <div class="--eduscope-mod-radio-toolbar">
           <input type="radio" id="header-0" name="header" value="0" />
           <label for="header-0">OFF</label>
@@ -78,58 +142,42 @@
           <input type="radio" id="header-1" name="header" value="1" />
           <label for="header-1">ON</label>
         </div>
-        <!-- Dark Mode -->
-        <span> Dark Mode </span>
-        <div class="--eduscope-mod-radio-toolbar">
-          <input type="radio" id="dark-0" name="dark" value="0" />
-          <label for="dark-0">OFF</label>
+      </div> -->
 
-          <input type="radio" id="dark-1" name="dark" value="1" />
-          <label for="dark-1">ON</label>
-        </div>
-        <!-- UI Tweaks -->
-        <span> UI Tweaks </span>
-        <div>
-          <div class="--eduscope-mod-radio-toolbar">
-            <input type="radio" id="tweaks-0" name="tweaks" value="0" />
-            <label for="tweaks-0">OFF</label>
+      <div style="width: 50%">
+        <button id="pip" class="--eduscope-button">Floating Window</button>
+      </div>
 
-            <input type="radio" id="tweaks-1" name="tweaks" value="1" />
-            <label for="tweaks-1">ON</label>
-          </div>
-
-          <div
-            class="--eduscope-mod-option-subtitle"
-            id="eduscope-mod-option-tweaks-subtitle"
-          ></div>
-        </div>
-
-        <br />
+      <div style="width: 50%">
+        <div class="--eduscope-button">Download Video</div>
       </div>
     </div>
 
-    <div>
+    <div style="margin-top: 20px">
       Version 3.0<br />
       <a
         class="--eduscope-mod-link"
         href="https://github.com/notnavindu/SLIIT-Eduscope-Mod"
         target="_blank"
-        >GitHub</a
       >
+        GitHub
+      </a>
       &nbsp;
       <a
         class="--eduscope-mod-link"
         href="https://github.com/notnavindu/SLIIT-Eduscope-Mod/issues"
         target="_blank"
-        >Report Bugs</a
       >
+        Report Bugs
+      </a>
       &nbsp;
       <a
         class="--eduscope-mod-link"
         href="https://github.com/notnavindu/SLIIT-Eduscope-Mod/issues"
         target="_blank"
-        >Request Mods</a
       >
+        Request Mods
+      </a>
       <br />
     </div>
     <br />

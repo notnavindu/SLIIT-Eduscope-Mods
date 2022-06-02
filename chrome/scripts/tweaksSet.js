@@ -39,8 +39,10 @@
 
         video.addEventListener("play", () => {
             loop = setInterval(() => {
-                port.postMessage({ currentTime: video.currentTime });
-            }, 2000)
+                try {
+                    port.postMessage({ currentTime: video.currentTime });
+                } catch (error) { console.log("Page Refresh Required") }
+            }, 1000)
         })
 
         video.addEventListener("pause", () => {

@@ -17,9 +17,9 @@ async function setupUI() {
     // get saved values
     let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed']);
     let { scroll } = await chrome.storage.sync.get(["scroll"]);
-    let { header } = await chrome.storage.sync.get(["header"]);
     let { dark } = await chrome.storage.sync.get(["dark"]);
     let { tweaks } = await chrome.storage.sync.get(["tweaks"]);
+    let { theater } = await chrome.storage.sync.get(["theater"]);
 
     // set saved options
     if (playbackSpeed) {
@@ -30,10 +30,6 @@ async function setupUI() {
       setScroll(scroll);
     }
 
-    if (header) {
-      setHeader(header);
-    }
-
     if (dark) {
       setDark(dark);
     }
@@ -42,13 +38,18 @@ async function setupUI() {
       setTweaks(tweaks);
     }
 
+    if (theater) {
+      setTheaterMode(theater);
+    }
+
 
     // get input elements
     let speedOptions = document.getElementsByName("speed");
     let scrollOptions = document.getElementsByName("scroll");
-    let headerOptions = document.getElementsByName("header");
     let darkOptions = document.getElementsByName("dark");
     let tweaksOptions = document.getElementsByName("tweaks");
+    let theaterOptions = document.getElementsByName("theater");
+    let pipMode = document.getElementById("pip");
 
     //add onclick handlers
     //speed
@@ -61,11 +62,6 @@ async function setupUI() {
       radio.addEventListener("change", onScrollOptionChange);
     });
 
-    //header
-    Array.prototype.forEach.call(headerOptions, function (radio) {
-      radio.addEventListener("change", onHeaderOptionChange);
-    });
-
     //DarkMode
     Array.prototype.forEach.call(darkOptions, function (radio) {
       radio.addEventListener("change", onDarkOptionChange);
@@ -76,9 +72,23 @@ async function setupUI() {
       radio.addEventListener("change", onTweaksOptionChange);
     });
 
+    // Theater mode
+    Array.prototype.forEach.call(theaterOptions, function (radio) {
+      radio.addEventListener("change", onTheaterOptionChange);
+    });
+
+    // PIP mode
+    pipMode.addEventListener("click", enablePip);
+
   }
 }
 
+/*
+*  --------------------------
+* | Option Change Handlers  |
+* --------------------------
+*
+*/
 
 
 // change video playback speed change handler
@@ -106,13 +116,6 @@ async function onScrollOptionChange() {
   await chrome.storage.sync.set({ "scroll": this.value })
 }
 
-async function onHeaderOptionChange() {
-  //set speed
-  setHeader(this.value);
-  // save to local storage
-  await chrome.storage.sync.set({ "header": this.value })
-}
-
 async function onDarkOptionChange() {
   setDark(this.value);
   // save to local storage
@@ -135,6 +138,12 @@ async function onTweaksOptionChange() {
   await chrome.storage.sync.set({ "tweaks": this.value })
 }
 
+async function onTheaterOptionChange() {
+  setTheaterMode(this.value);
+
+  // save to local storage
+  await chrome.storage.sync.set({ "theater": this.value })
+}
 
 /*
 *
@@ -153,10 +162,14 @@ async function setPlaybackSpeed(speed) {
 
   chrome.scripting.executeScript({
     target: { tabId: tabs[0].id, allFrames: true },
-    func: function (speed) {
+    func: function (sp) {
       videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
       Array.prototype.forEach.call(videoElements, function (elm) {
-        elm.playbackRate = speed;
+        // let playPromise = elm.play()
+        // if (playPromise !== undefined) {
+        //   elm.playbackRate = sp;
+        // }
+        elm.playbackRate = sp;
       });
     },
     args: [speed]
@@ -185,26 +198,9 @@ async function setScroll(state) {
   document.getElementById(`scroll-${state}`).checked = true;
 }
 
-// show and hide the header
-async function setHeader(state) {
-  let tabs = await chrome.tabs.query({ active: true });
-  if (state == 0) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabs[0].id, allFrames: true },
-      files: ['./scripts/headerHide.js'],
-    });
-  } else {
-    chrome.scripting.executeScript({
-      target: { tabId: tabs[0].id, allFrames: true },
-      files: ['./scripts/headerShow.js'],
-    });
-  }
-
-  document.getElementById(`header-${state}`).checked = true;
-}
-
 async function setSpeedSubtitle(val) {
   let texts = {
+    0.5: "Boooring",
     1: "Noobs",
     1.25: "Kids",
     1.5: "Men",
@@ -251,4 +247,39 @@ async function setTweaks(state) {
   }
 
   document.getElementById(`tweaks-${state}`).checked = true;
+}
+
+// set Theater mode
+async function setTheaterMode(state) {
+  let tabs = await chrome.tabs.query({ active: true });
+
+  if (state == 0) {
+    console.log("on")
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      files: ['./scripts/theaterRemove.js'],
+    });
+  } else {
+    console.log("on")
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      files: ['./scripts/theaterSet.js'],
+    });
+  }
+
+  document.getElementById(`theater-${state}`).checked = true;
+}
+
+async function enablePip() {
+  let tabs = await chrome.tabs.query({ active: true });
+
+  chrome.scripting.executeScript({
+    target: { tabId: tabs[0].id, allFrames: true },
+    func: function () {
+      videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
+      Array.prototype.forEach.call(videoElements, function (elm) {
+        elm.requestPictureInPicture();
+      });
+    },
+  });
 }

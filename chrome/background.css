@@ -1,43 +1,69 @@
 .--eduscope-mod-html {
-  width: 400px;
+  width: 350px;
   height: auto;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Courier New", Courier, monospace;
   background-color: #000;
   color: #fff;
   padding: 0;
   margin: 0;
-  text-align: center;
+  border: 3px #303030 solid;
 }
 #eduscope-mod-error {
   color: #f00;
 }
 .--eduscope-mod-body {
   padding: 0px 20px;
-  border: 2px solid #0388fc;
 }
+
 .--eduscope-mod-options-container {
   font-size: 100%;
-  text-align: center;
 }
+
 .--eduscope-mod-option-subtitle {
   margin-top: -10px;
   font-size: 90%;
   color: #0073d6;
 }
+
 .--eduscope-mod-disabled {
   pointer-events: none;
   opacity: 0.5;
 }
+
+.--eduscope-mod-option-row {
+  width: 100%;
+  display: flex;
+}
+
 .--eduscope-mod-link {
   color: #004b8c;
 }
+
 .--eduscope-mod-link:hover {
   color: #0388fc;
 }
 
+.--eduscope-button {
+  display: inline-block;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #000;
+  padding: 5px 10px;
+  font-size: 13px;
+  text-align: center;
+  border: 2px solid #444;
+  border-radius: 4px;
+}
+
+.--eduscope-button:hover {
+  background-color: #004b8c;
+  border: 2px solid #0388fc;
+}
+
 /* SELECTORS */
 .--eduscope-mod-radio-toolbar {
-  margin: 5px;
+  margin: 10px 0px;
 }
 
 .--eduscope-mod-radio-toolbar input[type="radio"] {
@@ -53,6 +79,7 @@
   background-color: #000;
   padding: 5px 10px;
   font-size: 13px;
+  text-align: center;
   border: 2px solid #444;
   border-radius: 4px;
 }
@@ -62,7 +89,7 @@
 }
 
 .--eduscope-mod-radio-toolbar input[type="radio"]:focus + label {
-  border: 2px solid rgb(255, 0, 0);
+  border: 2px solid rgb(0, 0, 0);
 }
 
 .--eduscope-mod-radio-toolbar input[type="radio"]:checked + label {
@@ -84,4 +111,23 @@
   background: #121212 !important;
   border: 1px solid #0073d6 !important;
   border-radius: 7px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #303030;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #004b8c;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #0073d6;
 }

@@ -35,19 +35,34 @@
 
         let loop;
 
-        let port = chrome.runtime.connect({ name: "timestamp" });
+        chrome.runtime.sendMessage({ connect: true }, function (response) {
+            console.log(response);
+        });
 
         video.addEventListener("play", () => {
-            loop = setInterval(() => {
+            loop = setInterval(async () => {
                 try {
-                    port.postMessage({ currentTime: video.currentTime });
-                } catch (error) { console.log("Page Refresh Required") }
+                    // if (!port) {
+                    //     console.log("port is null");
+                    //     port = await chrome.runtime.connect({ name: "timestamp" })
+                    // } else {
+                    //     port.postMessage({ currentTime: video.currentTime });
+                    // }
+                    chrome.runtime.sendMessage({ currentTime: video.currentTime }, function () { });
+                } catch (error) { console.log("Page Refresh Required", error) }
             }, 1000)
         })
 
         video.addEventListener("pause", () => {
             clearInterval(loop)
         })
+
+        // extension port disconnect event
+        // port.onDisconnect.addListener(() => {
+        //     console.log("port disconnected")
+        //     port = null;
+        // })
+
 
 
     }

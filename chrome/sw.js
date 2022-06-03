@@ -5,7 +5,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 async function init() {
-    let tabs = await chrome.tabs.query({ active: true });
+    let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
     if (tabs[0].url.includes("lecturecapture.sliit.lk")) {
         // get saved values
@@ -130,28 +130,28 @@ async function setTheaterMode(state) {
 
 chrome.runtime.onConnect.addListener(async (port) => {
     // get saved time and playback speed
-    let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed'])
+    // let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed'])
 
-    let url = new URL(port.sender.url)
-    let videoId = url.searchParams.get("id");
-    let savedTime = (await chrome.storage.local.get([`${videoId}`]))[`${videoId}`];
+    // let url = new URL(port.sender.url)
+    // let videoId = url.searchParams.get("id");
+    // let savedTime = (await chrome.storage.local.get([`${videoId}`]))[`${videoId}`];
 
-    console.log("setting...", savedTime, playbackSpeed)
-    chrome.scripting.executeScript({
-        target: { tabId: port.sender.tab.id, allFrames: true },
-        func: function (time, speed) {
-            videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
-            Array.prototype.forEach.call(videoElements, function (elm) {
-                let playPromise = elm.play()
-                if (playPromise !== undefined) {
-                    elm.currentTime = time;
-                    elm.playbackRate = speed;
-                    // elm.pause()
-                }
-            });
-        },
-        args: [savedTime || 1, playbackSpeed || 1]
-    });
+    // console.log("setting...", savedTime, playbackSpeed)
+    // chrome.scripting.executeScript({
+    //     target: { tabId: port.sender.tab.id, allFrames: true },
+    //     func: function (time, speed) {
+    //         videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
+    //         Array.prototype.forEach.call(videoElements, function (elm) {
+    //             let playPromise = elm.play()
+    //             if (playPromise !== undefined) {
+    //                 elm.currentTime = time;
+    //                 elm.playbackRate = speed;
+    //                 // elm.pause()
+    //             }
+    //         });
+    //     },
+    //     args: [savedTime || 1, playbackSpeed || 1]
+    // });
 
 
     port.onMessage.addListener(async (msg) => {
@@ -165,3 +165,48 @@ chrome.runtime.onConnect.addListener(async (port) => {
         }
     });
 });
+
+
+chrome.runtime.onMessage.addListener(
+    async function (request, sender, sendResponse) {
+        // initial request
+        if (request.connect) {
+            console.log("connecting...");
+            let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed'])
+
+            let url = new URL(sender.tab.url)
+            let videoId = url.searchParams.get("id");
+            let savedTime = (await chrome.storage.local.get([`${videoId}`]))[`${videoId}`];
+
+            console.log("setting...", savedTime, playbackSpeed)
+            chrome.scripting.executeScript({
+                target: { tabId: sender.tab.id, allFrames: true },
+                func: function (time, speed) {
+                    videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
+                    Array.prototype.forEach.call(videoElements, function (elm) {
+                        elm.playbackRate = speed;
+                        let playPromise = elm.play()
+                        if (playPromise !== undefined) {
+                            elm.currentTime = time;
+                            // elm.pause()
+                        }
+                    });
+                },
+                args: [savedTime || 1, playbackSpeed || 1]
+            });
+            sendResponse({ connected: true });
+        }
+
+        // save time
+        if (request.currentTime) {
+            let url = new URL(sender.tab.url)
+            let videoId = url.searchParams.get("id");
+            let values = {};
+            values[videoId] = request.currentTime;
+
+            chrome.storage.local.set(values)
+            sendResponse({ saved: true });
+        }
+
+    }
+);

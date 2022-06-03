@@ -6,9 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // check if user is in the eduscope website
 async function setupUI() {
-  let tabs = await chrome.tabs.query({ active: true });
+  let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   let pageUrl = tabs[0].url;
+
+  console.log(pageUrl)
 
   if (!pageUrl.includes("lecturecapture.sliit.lk")) {
     document.body.classList.add("--eduscope-mod-disabled");
@@ -158,7 +160,7 @@ async function onTheaterOptionChange() {
 async function setPlaybackSpeed(speed) {
   setSpeedSubtitle(speed);
 
-  let tabs = await chrome.tabs.query({ active: true });
+  let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   chrome.scripting.executeScript({
     target: { tabId: tabs[0].id, allFrames: true },
@@ -181,7 +183,7 @@ async function setPlaybackSpeed(speed) {
 
 // set scrolling behaviour
 async function setScroll(state) {
-  let tabs = await chrome.tabs.query({ active: true });
+  let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   if (state == 1) {
     chrome.scripting.executeScript({
       target: { tabId: tabs[0].id, allFrames: true },
@@ -217,7 +219,7 @@ async function setSpeedSubtitle(val) {
 
 // set dark theme
 async function setDark(state) {
-  let tabs = await chrome.tabs.query({ active: true });
+  let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   if (state == 0) {
     chrome.scripting.executeScript({
       target: { tabId: tabs[0].id, allFrames: true },
@@ -235,7 +237,7 @@ async function setDark(state) {
 
 // set UI Tweaks
 async function setTweaks(state) {
-  let tabs = await chrome.tabs.query({ active: true });
+  let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   if (state == 0) {
     console.log("off");
@@ -251,7 +253,7 @@ async function setTweaks(state) {
 
 // set Theater mode
 async function setTheaterMode(state) {
-  let tabs = await chrome.tabs.query({ active: true });
+  let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   if (state == 0) {
     console.log("on")
@@ -271,14 +273,18 @@ async function setTheaterMode(state) {
 }
 
 async function enablePip() {
-  let tabs = await chrome.tabs.query({ active: true });
+  let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   chrome.scripting.executeScript({
     target: { tabId: tabs[0].id, allFrames: true },
     func: function () {
       videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
       Array.prototype.forEach.call(videoElements, function (elm) {
-        elm.requestPictureInPicture();
+        if (!document.pictureInPictureElement && document.pictureInPictureEnabled) {
+          elm.requestPictureInPicture();
+        } else {
+          console.log("PIP not supported or already in PIP");
+        }
       });
     },
   });

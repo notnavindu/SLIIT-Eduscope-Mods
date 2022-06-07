@@ -1,18 +1,12 @@
-try {
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-        console.log(tab)
-        if (changeInfo.status === "complete") {
-            init(tab)
-        }
-    });
-} catch (error) {
-    console.log(error);
-}
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === "complete") {
+        init(tab)
+    }
+});
+
 
 async function init(tab) {
-
-    console.log("check", tab.url)
-
     if (tab.url.includes("lecturecapture.sliit.lk")) {
         // get saved values
         let { scroll } = await chrome.storage.sync.get(["scroll"]);

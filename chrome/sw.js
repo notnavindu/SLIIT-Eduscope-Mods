@@ -1,13 +1,19 @@
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === "complete") {
-        init()
-    }
-});
+try {
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+        console.log(tab)
+        if (changeInfo.status === "complete") {
+            init(tab)
+        }
+    });
+} catch (error) {
+    console.log(error);
+}
 
-async function init() {
-    let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+async function init(tab) {
 
-    if (tabs[0].url.includes("lecturecapture.sliit.lk")) {
+    console.log("check", tab.url)
+
+    if (tab.url.includes("lecturecapture.sliit.lk")) {
         // get saved values
         let { scroll } = await chrome.storage.sync.get(["scroll"]);
         let { dark } = await chrome.storage.sync.get(["dark"]);
@@ -15,19 +21,19 @@ async function init() {
         let { theater } = await chrome.storage.sync.get(["theater"]);
 
         if (scroll) {
-            setScroll(scroll);
+            setScroll(scroll, tab.id);
         }
 
         if (dark) {
-            setDark(dark);
+            setDark(dark, tab.id);
         }
 
         if (tweaks) {
-            setTweaks(tweaks);
+            setTweaks(tweaks, tab.id);
         }
 
         if (theater) {
-            setTheaterMode(theater);
+            setTheaterMode(theater, tab.id);
         }
     }
 }
@@ -41,11 +47,10 @@ async function init() {
 */
 
 // set playback speed
-async function setPlaybackSpeed(speed) {
-    let tabs = await chrome.tabs.query({ active: true });
+async function setPlaybackSpeed(speed, tabId) {
 
     chrome.scripting.executeScript({
-        target: { tabId: tabs[0].id, allFrames: true },
+        target: { tabId: tabId, allFrames: true },
         func: function (speed2) {
             videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
             Array.prototype.forEach.call(videoElements, function (elm) {
@@ -57,11 +62,10 @@ async function setPlaybackSpeed(speed) {
 }
 
 // set scrolling behaviour
-async function setScroll(state) {
-    let tabs = await chrome.tabs.query({ active: true });
+async function setScroll(state, tabId) {
     if (state == 1) {
         chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id, allFrames: true },
+            target: { tabId: tabId, allFrames: true },
             func: () => {
                 window.addEventListener('keydown', function (e) {
                     if (e.keyCode == 32) {
@@ -74,47 +78,44 @@ async function setScroll(state) {
 }
 
 // set dark theme
-async function setDark(state) {
-    let tabs = await chrome.tabs.query({ active: true });
+async function setDark(state, tabId) {
     if (state == 0) {
         chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id, allFrames: true },
+            target: { tabId: tabId, allFrames: true },
             files: ['./scripts/darkThemeRemove.js'],
         });
     } else {
         chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id, allFrames: true },
+            target: { tabId: tabId, allFrames: true },
             files: ['./scripts/darkThemeSet.js'],
         });
     }
 }
 
 // set UI Tweaks
-async function setTweaks(state) {
-    let tabs = await chrome.tabs.query({ active: true });
+async function setTweaks(state, tabId) {
 
     if (state == 0) {
         console.log("off");
     } else {
         chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id, allFrames: true },
+            target: { tabId: tabId, allFrames: true },
             files: ['./scripts/tweaksSet.js'],
         });
     }
 }
 
 // set Theater mode
-async function setTheaterMode(state) {
-    let tabs = await chrome.tabs.query({ active: true });
+async function setTheaterMode(state, tabId) {
 
     if (state == 0) {
         chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id, allFrames: true },
+            target: { tabId: tabId, allFrames: true },
             files: ['./scripts/theaterRemove.js'],
         });
     } else {
         chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id, allFrames: true },
+            target: { tabId: tabId, allFrames: true },
             files: ['./scripts/theaterSet.js'],
         });
     }
@@ -127,45 +128,6 @@ async function setTheaterMode(state) {
 * ------------------------------
 *
 */
-
-chrome.runtime.onConnect.addListener(async (port) => {
-    // get saved time and playback speed
-    // let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed'])
-
-    // let url = new URL(port.sender.url)
-    // let videoId = url.searchParams.get("id");
-    // let savedTime = (await chrome.storage.local.get([`${videoId}`]))[`${videoId}`];
-
-    // console.log("setting...", savedTime, playbackSpeed)
-    // chrome.scripting.executeScript({
-    //     target: { tabId: port.sender.tab.id, allFrames: true },
-    //     func: function (time, speed) {
-    //         videoElements = document.getElementById("eplayer_iframe")?.contentWindow?.document?.getElementsByTagName("video") || [];
-    //         Array.prototype.forEach.call(videoElements, function (elm) {
-    //             let playPromise = elm.play()
-    //             if (playPromise !== undefined) {
-    //                 elm.currentTime = time;
-    //                 elm.playbackRate = speed;
-    //                 // elm.pause()
-    //             }
-    //         });
-    //     },
-    //     args: [savedTime || 1, playbackSpeed || 1]
-    // });
-
-
-    port.onMessage.addListener(async (msg) => {
-        if (msg.currentTime) {
-            let url = new URL(port.sender.url)
-            let videoId = url.searchParams.get("id");
-            let values = {};
-            values[videoId] = msg.currentTime;
-
-            await chrome.storage.local.set(values)
-        }
-    });
-});
-
 
 chrome.runtime.onMessage.addListener(
     async function (request, sender, sendResponse) {

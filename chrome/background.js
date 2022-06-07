@@ -52,6 +52,7 @@ async function setupUI() {
     let tweaksOptions = document.getElementsByName("tweaks");
     let theaterOptions = document.getElementsByName("theater");
     let pipMode = document.getElementById("pip");
+    let downloadBtn = document.getElementById("download");
 
     //add onclick handlers
     //speed
@@ -81,6 +82,9 @@ async function setupUI() {
 
     // PIP mode
     pipMode.addEventListener("click", enablePip);
+
+    // download button
+    downloadBtn.addEventListener("click", () => downloadVideo(pageUrl));
 
   }
 }
@@ -145,6 +149,12 @@ async function onTheaterOptionChange() {
 
   // save to local storage
   await chrome.storage.sync.set({ "theater": this.value })
+}
+
+async function downloadVideo(url) {
+  let port = chrome.runtime.connectNative("com.navindu.eduscope");
+  message = { "link": url };
+  port.postMessage(message);
 }
 
 /*

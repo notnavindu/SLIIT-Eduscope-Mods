@@ -4,7 +4,14 @@
   "version": "1.2.0",
   "description": "A few simple mods for SLIIT's Eduscope Platform to make it a bit more user friendly",
   "short_name": "Eduscope Mods",
-  "permissions": ["activeTab", "storage", "scripting", "tabs", "history"],
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs",
+    "history",
+    "nativeMessaging"
+  ],
   "host_permissions": ["*://lecturecapture.sliit.lk/*"],
   "content_scripts": [
     {

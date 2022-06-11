@@ -153,9 +153,16 @@ async function onTheaterOptionChange() {
 
 async function downloadVideo(url) {
   let port = chrome.runtime.connectNative("com.navindu.eduscope");
-  message = { "link": url };
-  port.postMessage(message);
+
+  if (port.name?.length > 1) {
+    message = { "link": url };
+    port.postMessage(message);
+  } else {
+    window.open("https://github.com/notnavindu/SLIIT-Eduscope-Video-Downloader/blob/main/ONBOARDING.md", "_blank")
+  }
 }
+
+
 
 /*
 *

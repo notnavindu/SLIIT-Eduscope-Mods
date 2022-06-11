@@ -152,14 +152,16 @@ async function onTheaterOptionChange() {
 }
 
 async function downloadVideo(url) {
-  let port = chrome.runtime.connectNative("com.navindu.eduscope");
+  let port = await chrome.runtime.connectNative("com.navindu.eduscope");
 
-  if (port.name?.length > 1) {
-    message = { "link": url };
-    port.postMessage(message);
-  } else {
-    window.open("https://github.com/notnavindu/SLIIT-Eduscope-Video-Downloader/blob/main/ONBOARDING.md", "_blank")
-  }
+  message = { "link": url };
+  port.postMessage(message);
+
+  port.onDisconnect.addListener(function () {
+    if (chrome.runtime.lastError.message === "Specified native messaging host not found.") {
+      window.open("https://github.com/notnavindu/SLIIT-Eduscope-Video-Downloader/blob/main/ONBOARDING.md", "_blank")
+    }
+  });
 }
 
 

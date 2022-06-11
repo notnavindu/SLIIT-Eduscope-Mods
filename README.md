@@ -1,19 +1,17 @@
-# SLIIT Eduscope Mod
+# SLIIT Eduscope Mod v3.0
 
-A Simple Chrome Extension (need help with Firefox) with a few simple mods for SLIIT's Eduscope video platform.
+A Simple Chrome Extension with a few simple mods for SLIIT's Eduscope video platform.
 
 ## Features
 
-    - Change video playback speed (0.5x, 1x, 2x, 6x)
-    - Prevent the page from scrolling when the spacebar is pressed
-    - Hide the gigantic "eduscope" header
-
-### Upcoming Features
-
-    - Dark Theme Mod
+- Change video playback speed (0.5x, 1x, 2x, 6x)
+- Theater mode
+- Save video playback time
+- Download videos
+- Prevent the page from scrolling when the spacebar is pressed
 
 ### Firefox
 
-    The only changes in the firefox directory are some minor CSS changes.
+Latest version (v3) is not tested or ported to firefox yet. Waiting till Sem 1 finals are over :/
 
 Did anyone ask for this? No.

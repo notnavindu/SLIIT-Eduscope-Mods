@@ -164,8 +164,6 @@ async function downloadVideo(url) {
   });
 }
 
-
-
 /*
 *
 * ------------------------------ 
@@ -173,7 +171,6 @@ async function downloadVideo(url) {
 * ------------------------------
 *
 */
-
 
 // set playback speed
 async function setPlaybackSpeed(speed) {

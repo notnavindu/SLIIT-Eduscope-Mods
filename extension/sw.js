@@ -1,9 +1,23 @@
+let globalSession = {};
+let sessionStart = {};
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete") {
         init(tab)
     }
+
+    if (changeInfo.status === "loading" && tab.url.includes("lecturecapture.sliit.lk")) {
+        if (globalSession[tabId]) {
+            saveSession(tabId)
+        }
+    }
 });
+
+chrome.tabs.onRemoved.addListener(
+    (tabId) => {
+        saveSession(tabId);
+    }
+)
 
 
 async function init(tab) {
@@ -29,6 +43,8 @@ async function init(tab) {
         if (theater) {
             setTheaterMode(theater, tab.id);
         }
+
+        setAnalytics(tab.id, tab.url)
     }
 }
 
@@ -42,7 +58,6 @@ async function init(tab) {
 
 // set playback speed
 async function setPlaybackSpeed(speed, tabId) {
-
     chrome.scripting.executeScript({
         target: { tabId: tabId, allFrames: true },
         func: function (speed2) {
@@ -88,7 +103,6 @@ async function setDark(state, tabId) {
 
 // set UI Tweaks
 async function setTweaks(state, tabId) {
-
     if (state == 0) {
         console.log("off");
     } else {
@@ -101,7 +115,6 @@ async function setTweaks(state, tabId) {
 
 // set Theater mode
 async function setTheaterMode(state, tabId) {
-
     if (state == 0) {
         chrome.scripting.executeScript({
             target: { tabId: tabId, allFrames: true },
@@ -115,6 +128,21 @@ async function setTheaterMode(state, tabId) {
     }
 }
 
+// Analytics
+async function setAnalytics(tabId) {
+    globalSession[tabId] = {};
+    globalSession[tabId] = {
+        start: null,
+        duration: 0,
+        isPlaying: false
+    };
+
+    chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ['./scripts/eduGraph.js'],
+    });
+}
+
 /*
 *
 * ------------------------------ 
@@ -125,16 +153,15 @@ async function setTheaterMode(state, tabId) {
 
 chrome.runtime.onMessage.addListener(
     async function (request, sender, sendResponse) {
+        let url = new URL(sender.tab.url)
+        let videoId = url.searchParams.get("id");
+
         // initial request
         if (request.connect) {
-            console.log("connecting...");
             let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed'])
 
-            let url = new URL(sender.tab.url)
-            let videoId = url.searchParams.get("id");
             let savedTime = (await chrome.storage.local.get([`${videoId}`]))[`${videoId}`];
 
-            console.log("setting...", savedTime, playbackSpeed)
             chrome.scripting.executeScript({
                 target: { tabId: sender.tab.id, allFrames: true },
                 func: function (time, speed) {
@@ -155,8 +182,6 @@ chrome.runtime.onMessage.addListener(
 
         // save time
         if (request.currentTime) {
-            let url = new URL(sender.tab.url)
-            let videoId = url.searchParams.get("id");
             let values = {};
             values[videoId] = request.currentTime;
 
@@ -164,5 +189,46 @@ chrome.runtime.onMessage.addListener(
             sendResponse({ saved: true });
         }
 
+        // eduGraph
+        if (request.pause) {
+            console.log("Pause")
+
+            globalSession[sender.tab.id].isPlaying = false;
+
+            let now = Date.now();
+            let diff = now - sessionStart[sender.tab.id];
+
+            globalSession[sender.tab.id].duration += diff;
+
+            sendResponse({ recieved: true });
+        }
+
+        if (request.play) {
+            sessionStart[sender.tab.id] = Date.now();
+            globalSession[sender.tab.id].isPlaying = true;
+
+            if (globalSession[sender.tab.id].start == null) {
+                globalSession[sender.tab.id].start = sessionStart[sender.tab.id]
+                globalSession[sender.tab.id].videoId = videoId
+            }
+
+            sendResponse({ recieved: true });
+        }
     }
 );
+
+
+const saveSession = (tabId) => {
+    if (globalSession[tabId]?.isPlaying) {
+        let now = Date.now();
+        let diff = now - sessionStart[tabId];
+
+        globalSession[tabId].duration += diff;
+    }
+
+    console.log("Ended -> ", globalSession[tabId].videoId, globalSession[tabId].duration);
+
+    // send to API
+
+    delete globalSession[tabId]
+}

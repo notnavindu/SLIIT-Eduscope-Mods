@@ -42,12 +42,6 @@
         video.addEventListener("play", () => {
             loop = setInterval(async () => {
                 try {
-                    // if (!port) {
-                    //     console.log("port is null");
-                    //     port = await chrome.runtime.connect({ name: "timestamp" })
-                    // } else {
-                    //     port.postMessage({ currentTime: video.currentTime });
-                    // }
                     chrome.runtime.sendMessage({ currentTime: video.currentTime }, function () { });
                 } catch (error) { console.log("Page Refresh Required", error) }
             }, 1000)
@@ -56,14 +50,6 @@
         video.addEventListener("pause", () => {
             clearInterval(loop)
         })
-
-        // extension port disconnect event
-        // port.onDisconnect.addListener(() => {
-        //     console.log("port disconnected")
-        //     port = null;
-        // })
-
-
 
     }
 

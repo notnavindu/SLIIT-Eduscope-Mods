@@ -1,5 +1,6 @@
 let globalSession = {};
 let sessionStart = {};
+let studentId;
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete") {
@@ -15,7 +16,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 chrome.tabs.onRemoved.addListener(
     (tabId) => {
-        saveSession(tabId);
+        if (globalSession[tabId]) {
+            saveSession(tabId);
+        }
     }
 )
 
@@ -190,6 +193,11 @@ chrome.runtime.onMessage.addListener(
         }
 
         // eduGraph
+        if (request.studentId) {
+            studentId = request.studentId;
+            sendResponse({ recieved: true })
+        }
+
         if (request.pause) {
             console.log("Pause")
 
@@ -228,7 +236,25 @@ const saveSession = (tabId) => {
 
     console.log("Ended -> ", globalSession[tabId].videoId, globalSession[tabId].duration);
 
-    // send to API
+    let data = {
+        studentId: studentId,
+        ...globalSession[tabId]
+    }
 
-    delete globalSession[tabId]
+    if (studentId && globalSession[tabId].duration > 1) {
+        // send to API
+        fetch("http://localhost:3000/api/save", {
+            method: "POST",
+            headers: new Headers({
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            }),
+            body: JSON.stringify(data)
+        }).then(res => {
+            console.log("Request complete! response:", res);
+        });
+
+        delete globalSession[tabId]
+    }
 }
+

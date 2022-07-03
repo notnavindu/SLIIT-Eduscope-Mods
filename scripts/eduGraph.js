@@ -20,4 +20,10 @@
             });
         })
     }
+
+    let user = document.getElementById("dropdown08")?.text?.replace("(Logout)", "")?.trim();
+    chrome.runtime.sendMessage({ studentId: user }, function (response) {
+        console.log(response);
+    });
+
 })()

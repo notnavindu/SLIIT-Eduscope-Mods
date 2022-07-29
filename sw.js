@@ -234,8 +234,6 @@ const saveSession = (tabId) => {
         globalSession[tabId].duration += diff;
     }
 
-    console.log("Ended -> ", globalSession[tabId].videoId, globalSession[tabId].duration);
-
     let data = {
         studentId: studentId,
         ...globalSession[tabId]

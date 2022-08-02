@@ -241,7 +241,7 @@ const saveSession = (tabId) => {
 
     if (studentId && globalSession[tabId].duration > 1) {
         // send to API
-        fetch("http://localhost:3000/api/save", {
+        fetch("https://edu-graph.vercel.app/api/save", {
             method: "POST",
             headers: new Headers({
                 'Content-Type': 'application/json',

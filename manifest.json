@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SLIIT Eduscope Mods",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "A few simple mods for SLIIT's Eduscope Platform to make it a bit more user friendly",
   "short_name": "Eduscope Mods",
   "permissions": ["storage", "scripting", "tabs", "nativeMessaging"],

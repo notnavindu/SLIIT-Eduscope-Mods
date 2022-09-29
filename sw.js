@@ -298,7 +298,7 @@ const saveSession = async (tabId, videoId) => {
         if (studentId && duration > 1) {
             console.log(data.duration)
             // send to API
-            fetch("https://edu-graph.vercel.app/api/save", {
+            fetch("https://edu-graph.vercel.app/api/saveV2", {
                 method: "POST",
                 headers: new Headers({
                     'Content-Type': 'application/json',

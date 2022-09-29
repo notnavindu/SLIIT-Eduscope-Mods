@@ -5,27 +5,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete") {
         init(tab)
     }
-
-    if (changeInfo.status === "loading" && tab.url.includes("lecturecapture.sliit.lk")) {
-
-        let url = new URL(tab.url)
-        let videoId = url.searchParams.get("id");
-
-        await saveSession(tabId, videoId)
-
-        try {
-            await chrome.storage.local.remove([[
-                `edugraph-${videoId}-session-start`,
-                `edugraph-${videoId}-duration`,
-                `edugraph-${videoId}-isPlaying`,
-                `edugraph-${tabId}-videoId`,
-                `edugraph-studentId`
-            ]])
-        } catch (error) {
-
-        }
-
-    }
 });
 
 chrome.tabs.onRemoved.addListener(

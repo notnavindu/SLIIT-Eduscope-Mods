@@ -39,12 +39,11 @@ var lastSavedTime;
 
 
         chrome.runtime.sendMessage({ connect: true }, function (response) {
-            console.log(response);
+
         });
 
         video.addEventListener("play", () => {
             if (loop) {
-                console.log("alreay run")
                 return
             };
 
@@ -56,10 +55,6 @@ var lastSavedTime;
                 } catch (error) { console.log("Page Refresh Required", error) }
             }, 1000)
         })
-
-        video.ontimeupdate = () => {
-            console.log("time", video.currentTime)
-        }
 
         video.addEventListener("pause", () => {
             clearInterval(loop)

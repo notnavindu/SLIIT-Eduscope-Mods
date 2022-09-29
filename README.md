@@ -1,4 +1,4 @@
-# SLIIT Eduscope Mod v3.0
+# SLIIT Eduscope Mod v3.4.0
 
 A Simple Chrome Extension with a few simple mods for SLIIT's Eduscope video platform.
 

@@ -13,9 +13,14 @@
     <div class="--eduscope-mod-options-container">
       <!-- Playback Speed -->
       <div id="speed-container">
-        <span> Playback Speed</span>
+        <div style="display: flex; align-items: center; gap: 5px">
+          Playback Speed
+          <div id="blinker" class="--eduscope-mod-blinking"></div>
+        </div>
+        <div id="speedValue" class="--eduscope-mod-speed-value">1.00x</div>
+
         <div class="--eduscope-mod-radio-toolbar">
-          <input type="radio" id="0.5xSpeed" name="speed" value="0.5" />
+          <!-- <input type="radio" id="0.5xSpeed" name="speed" value="0.5" />
           <label for="0.5xSpeed">0.5x</label>
 
           <input type="radio" id="1xSpeed" name="speed" value="1" />
@@ -45,7 +50,17 @@
           <label for="6xSpeed">6x</label>
 
           <input type="radio" id="16xSpeed" name="speed" value="16" />
-          <label for="16xSpeed">16x</label>
+          <label for="16xSpeed">16x</label> -->
+
+          <input
+            type="range"
+            min="0"
+            max="10"
+            step="0.01"
+            value="1"
+            class="--eduscope-mod-slider"
+            id="speedSlider"
+          />
         </div>
 
         <div
@@ -142,7 +157,7 @@
     </div>
 
     <div style="margin-top: 20px">
-      Version 3.2.0<br />
+      Version 3.4.0<br />
       <a
         class="--eduscope-mod-link"
         href="https://github.com/notnavindu/SLIIT-Eduscope-Mod"

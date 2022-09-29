@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("will this work")
   setupUI()
 });
 
@@ -25,7 +24,7 @@ async function setupUI() {
 
     // set saved options
     if (playbackSpeed) {
-      setPlaybackSpeed(playbackSpeed);
+      setPlaybackSpeed(playbackSpeed, true);
     }
 
     if (scroll) {
@@ -46,7 +45,7 @@ async function setupUI() {
 
 
     // get input elements
-    let speedOptions = document.getElementsByName("speed");
+    let speedSlider = document.getElementById("speedSlider")
     let scrollOptions = document.getElementsByName("scroll");
     let darkOptions = document.getElementsByName("dark");
     let tweaksOptions = document.getElementsByName("tweaks");
@@ -56,9 +55,8 @@ async function setupUI() {
 
     //add onclick handlers
     //speed
-    Array.prototype.forEach.call(speedOptions, function (radio) {
-      radio.addEventListener("change", onSpeedOptionChange);
-    });
+    speedSlider.oninput = onSpeedOptionChangeRealtime
+    speedSlider.onmouseup = onSpeedOptionChange
 
     //scroll
     Array.prototype.forEach.call(scrollOptions, function (radio) {
@@ -103,6 +101,13 @@ async function onSpeedOptionChange() {
   setPlaybackSpeed(this.value);
   // save to storage
   await chrome.storage.sync.set({ "playbackSpeed": this.value })
+}
+
+async function onSpeedOptionChangeRealtime() {
+  let suffix = this.value > 5 ? "x🔥" : "x"
+  document.getElementById("speedValue").innerHTML = `${Number(this.value).toFixed(2)}${suffix}`
+
+  document.getElementById("blinker").style.animationDuration = `${Number((1 / this.value) / 2).toFixed(2)}s`
 }
 
 // change scroll behavior change handler
@@ -173,9 +178,7 @@ async function downloadVideo(url) {
 */
 
 // set playback speed
-async function setPlaybackSpeed(speed) {
-  setSpeedSubtitle(speed);
-
+async function setPlaybackSpeed(speed, setInitial = false) {
   let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   chrome.scripting.executeScript({
@@ -193,8 +196,11 @@ async function setPlaybackSpeed(speed) {
     args: [speed]
   });
 
-  // set 'checked' state.
-  document.getElementById(`${speed}xSpeed`).checked = true;
+  if (setInitial) {
+    let suffix = this.value > 5 ? "x🔥" : "x"
+    document.getElementById("speedValue").innerHTML = `${Number(speed).toFixed(2)}${suffix}`
+    document.getElementById("speedSlider").value = speed
+  }
 }
 
 // set scrolling behaviour
@@ -214,23 +220,6 @@ async function setScroll(state) {
   }
 
   document.getElementById(`scroll-${state}`).checked = true;
-}
-
-async function setSpeedSubtitle(val) {
-  let texts = {
-    0.5: "Boooring",
-    1: "Noobs",
-    1.25: "Kids",
-    1.5: "Men",
-    1.75: "Legends",
-    2: "Ultra Legends",
-    2.5: "Ultra Legend Pro",
-    3: "Ultra Legend Pro Max",
-    6: "Rap God",
-    16: "Yeah, Life is short",
-  };
-
-  document.getElementById("eduscope-mod-option-subtitle").innerHTML = texts[val];
 }
 
 // set dark theme

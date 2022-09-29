@@ -131,3 +131,57 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #0073d6;
 }
+
+.--eduscope-mod-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: #444;
+  outline: none;
+  opacity: 1;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+}
+
+.--eduscope-mod-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #0388fc;
+  cursor: pointer;
+}
+
+.--eduscope-mod-slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #0388fc;
+  cursor: pointer;
+}
+
+.--eduscope-mod-speed-value {
+  font-size: 2rem;
+  color: #0388fc;
+  font-weight: bold;
+}
+
+.--eduscope-mod-blinking {
+  width: 10px;
+  height: 10px;
+  background: #0388fc;
+  border-radius: 100%;
+  margin-top: 2px;
+  animation: eduscopeModBlinkAnimation 0.5s infinite alternate ease-in-out;
+}
+
+@keyframes eduscopeModBlinkAnimation {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,4 +1,6 @@
+var edugraphInit = false;
 (() => {
+    // var test;
     let eplayer = document.getElementById("eplayer_iframe");
 
     if (eplayer) {
@@ -15,6 +17,12 @@
                 console.log(response);
             });
         })
+
+        setInterval(async () => {
+            try {
+                chrome.runtime.sendMessage({ autoSave: true }, function () { });
+            } catch (error) { console.log("Page Refresh Required", error) }
+        }, 1000 * 60 * 4)
     }
 
     let user = document.getElementById("dropdown08")?.text?.replace("(Logout)", "")?.trim();

@@ -1,25 +1,50 @@
-let globalSession = {};
-let sessionStart = {};
 let studentId;
+let saveLoop;
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete") {
         init(tab)
     }
 
     if (changeInfo.status === "loading" && tab.url.includes("lecturecapture.sliit.lk")) {
-        if (globalSession[tabId]) {
-            saveSession(tabId)
+
+        let url = new URL(tab.url)
+        let videoId = url.searchParams.get("id");
+
+        await saveSession(tabId, videoId)
+
+        try {
+            await chrome.storage.local.remove([[
+                `edugraph-${videoId}-session-start`,
+                `edugraph-${videoId}-duration`,
+                `edugraph-${videoId}-isPlaying`,
+                `edugraph-${tabId}-videoId`,
+                `edugraph-studentId`
+            ]])
+        } catch (error) {
+
         }
+
     }
 });
 
 chrome.tabs.onRemoved.addListener(
-    (tabId) => {
-        if (globalSession[tabId]) {
-            saveSession(tabId);
+    async (tabId) => {
+        let videoId = (await chrome.storage.local.get(`edugraph-${tabId}-videoId`))[`edugraph-${tabId}-videoId`]
+        await saveSession(tabId, videoId)
+
+        try {
+            await chrome.storage.local.remove([[
+                `edugraph-${videoId}-session-start`,
+                `edugraph-${videoId}-duration`,
+                `edugraph-${videoId}-isPlaying`,
+                `edugraph-studentId`
+            ]])
+        } catch (error) {
+
         }
     }
+
 )
 
 
@@ -133,17 +158,13 @@ async function setTheaterMode(state, tabId) {
 
 // Analytics
 async function setAnalytics(tabId) {
-    globalSession[tabId] = {};
-    globalSession[tabId] = {
-        start: null,
-        duration: 0,
-        isPlaying: false
-    };
+    console.log("init edugraph")
 
     chrome.scripting.executeScript({
         target: { tabId: tabId },
         files: ['./scripts/eduGraph.js'],
     });
+
 }
 
 /*
@@ -161,9 +182,12 @@ chrome.runtime.onMessage.addListener(
 
         // initial request
         if (request.connect) {
+            sendResponse({ connected: true });
+
             let { playbackSpeed } = await chrome.storage.sync.get(['playbackSpeed'])
 
             let savedTime = (await chrome.storage.local.get([`${videoId}`]))[`${videoId}`];
+
 
             chrome.scripting.executeScript({
                 target: { tabId: sender.tab.id, allFrames: true },
@@ -180,79 +204,136 @@ chrome.runtime.onMessage.addListener(
                 },
                 args: [savedTime || 1, playbackSpeed || 1]
             });
-            sendResponse({ connected: true });
+
+
         }
 
         // save time
         if (request.currentTime) {
+            sendResponse({ saved: request.currentTime });
             let values = {};
             values[videoId] = request.currentTime;
 
             chrome.storage.local.set(values)
-            sendResponse({ saved: true });
         }
 
         // eduGraph
         if (request.studentId) {
-            studentId = request.studentId;
             sendResponse({ recieved: true })
+            studentId = request.studentId;
+            resetLocalData(videoId, studentId, sender.tab.id)
         }
 
         if (request.pause) {
+            sendResponse({ recieved: true });
             console.log("Pause")
 
-            globalSession[sender.tab.id].isPlaying = false;
+            let data = await chrome.storage.local.get([`edugraph-${videoId}-session-start`, `edugraph-${videoId}-duration`])
 
             let now = Date.now();
-            let diff = now - sessionStart[sender.tab.id];
+            let diff = now - data[`edugraph-${videoId}-session-start`];
 
-            globalSession[sender.tab.id].duration += diff;
+            let playingVal = {}
+            playingVal[`edugraph-${videoId}-duration`] = data[`edugraph-${videoId}-duration`] + diff;
+            playingVal[`edugraph-${videoId}-isPlaying`] = false;
+            playingVal[`edugraph-${videoId}-session-start`] = now;
 
-            sendResponse({ recieved: true });
+            await chrome.storage.local.set(playingVal)
         }
 
         if (request.play) {
-            sessionStart[sender.tab.id] = Date.now();
-            globalSession[sender.tab.id].isPlaying = true;
-
-            if (globalSession[sender.tab.id].start == null) {
-                globalSession[sender.tab.id].start = sessionStart[sender.tab.id]
-                globalSession[sender.tab.id].videoId = videoId
-            }
-
             sendResponse({ recieved: true });
+
+            console.log("play");
+
+            let playingVal = {}
+            playingVal[`edugraph-${videoId}-isPlaying`] = true;
+            playingVal[`edugraph-${videoId}-session-start`] = Date.now()
+            await chrome.storage.local.set(playingVal)
         }
+
+        if (request.autoSave) {
+            sendResponse({ recieved: true });
+            saveSession(sender.tab.id, videoId)
+        }
+
+        return true;
     }
 );
 
 
-const saveSession = (tabId) => {
-    if (globalSession[tabId]?.isPlaying) {
-        let now = Date.now();
-        let diff = now - sessionStart[tabId];
+const test = async () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, 500)
+    })
+}
 
-        globalSession[tabId].duration += diff;
+const resetLocalData = async (videoId, studentId, tabId) => {
+    let values = {};
+    values[`edugraph-${videoId}-duration`] = 0;
+    values[`edugraph-${videoId}-session-start`] = Date.now();
+    values[`edugraph-${videoId}-isPlaying`] = false;
+    values[`edugraph-${tabId}-videoId`] = videoId;
+    values[`edugraph-studentId`] = studentId;
+    await chrome.storage.local.set(values)
+}
+
+const getEdugraphValuesForVideo = async (videoId) => {
+    let data = await chrome.storage.local.get([
+        `edugraph-${videoId}-session-start`,
+        `edugraph-${videoId}-duration`,
+        `edugraph-${videoId}-isPlaying`,
+        `edugraph-studentId`
+    ])
+
+    return {
+        sessionStart: data[`edugraph-${videoId}-session-start`],
+        duration: data[`edugraph-${videoId}-duration`],
+        isPlaying: data[`edugraph-${videoId}-isPlaying`],
+        studentId: data["edugraph-studentId"]
     }
+}
 
-    let data = {
-        studentId: studentId,
-        ...globalSession[tabId]
-    }
+const saveSession = async (tabId, videoId) => {
+    return new Promise(async (resolve, reject) => {
+        console.log("...")
+        let { sessionStart, duration, isPlaying, studentId } = await getEdugraphValuesForVideo(videoId)
 
-    if (studentId && globalSession[tabId].duration > 1) {
-        // send to API
-        fetch("https://edu-graph.vercel.app/api/save", {
-            method: "POST",
-            headers: new Headers({
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }),
-            body: JSON.stringify(data)
-        }).then(res => {
-            console.log("Request complete! response:", res);
-        });
+        if (isPlaying) {
+            duration = duration + (Date.now() - sessionStart)
+        }
 
-        delete globalSession[tabId]
-    }
+        let data = {
+            studentId: studentId,
+            start: sessionStart,
+            duration: duration,
+            videoId: videoId
+        }
+
+        let val = {}
+        val[`edugraph-${videoId}-duration`] = 0;
+        val[`edugraph-${videoId}-session-start`] = Date.now();
+
+        await chrome.storage.local.set(val)
+
+        if (studentId && duration > 1) {
+            console.log(data.duration)
+            // send to API
+            fetch("https://edu-graph.vercel.app/api/save", {
+                method: "POST",
+                headers: new Headers({
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                }),
+                body: JSON.stringify(data)
+            }).then(res => {
+                console.log("Request complete! response:", res);
+                resolve()
+            }).catch(e => {
+                reject()
+            });
+        }
+    })
+
 }
 

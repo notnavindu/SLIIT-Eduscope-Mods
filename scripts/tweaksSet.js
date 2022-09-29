@@ -1,4 +1,7 @@
+var loop;
+var lastSavedTime;
 (() => {
+
     document.getElementsByTagName("body")[0].style.fontFamily = "Arial";
 
     let eplayer = document.getElementById("eplayer_iframe");
@@ -33,24 +36,35 @@
         // On Time update
         let video = eplayer.contentWindow.document.getElementsByTagName("video")[0];
 
-        let loop;
+
 
         chrome.runtime.sendMessage({ connect: true }, function (response) {
             console.log(response);
         });
 
         video.addEventListener("play", () => {
+            if (loop) {
+                console.log("alreay run")
+                return
+            };
+
             loop = setInterval(async () => {
                 try {
-                    chrome.runtime.sendMessage({ currentTime: video.currentTime }, function () { });
+                    // console.log(video.currentTime, lastSavedTime)
+                    if (video.currentTime === lastSavedTime) return
+                    chrome.runtime.sendMessage({ currentTime: video.currentTime }, function (data) { lastSavedTime = data.saved });
                 } catch (error) { console.log("Page Refresh Required", error) }
             }, 1000)
         })
 
+        video.ontimeupdate = () => {
+            console.log("time", video.currentTime)
+        }
+
         video.addEventListener("pause", () => {
             clearInterval(loop)
+            loop = null
         })
-
     }
 
     function handler(event) {

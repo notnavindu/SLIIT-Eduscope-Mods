@@ -274,7 +274,6 @@ const getEdugraphValuesForVideo = async (videoId) => {
 }
 
 const saveSession = async (tabId, videoId) => {
-    console.log("CAME HERE")
     return new Promise(async (resolve, reject) => {
 
         let { sessionStart, duration, isPlaying, studentId } = await getEdugraphValuesForVideo(videoId)
@@ -297,7 +296,6 @@ const saveSession = async (tabId, videoId) => {
         await chrome.storage.local.set(val)
 
         const { analytics } = await chrome.storage.local.get(["analytics"])
-        console.log("CONSENT", analytics)
 
         if (analytics == "1" && studentId && duration > 1) {
             // send to API

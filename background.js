@@ -195,7 +195,6 @@ async function onTheaterOptionChange() {
 }
 
 async function onAnalyticsOptionChange() {
-  console.log(this.value)
   // save to local storage
   await chrome.storage.local.set({ "analytics": this.value })
 }
@@ -290,7 +289,7 @@ async function setTweaks(state) {
   let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   if (state == 0) {
-    console.log("off");
+
   } else {
     chrome.scripting.executeScript({
       target: { tabId: tabs[0].id, allFrames: true },
@@ -306,13 +305,13 @@ async function setTheaterMode(state) {
   let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   if (state == 0) {
-    console.log("on")
+
     chrome.scripting.executeScript({
       target: { tabId: tabs[0].id, allFrames: true },
       files: ['./scripts/theaterRemove.js'],
     });
   } else {
-    console.log("on")
+
     chrome.scripting.executeScript({
       target: { tabId: tabs[0].id, allFrames: true },
       files: ['./scripts/theaterSet.js'],

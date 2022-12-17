@@ -274,8 +274,9 @@ const getEdugraphValuesForVideo = async (videoId) => {
 }
 
 const saveSession = async (tabId, videoId) => {
+    console.log("CAME HERE")
     return new Promise(async (resolve, reject) => {
-        console.log("...")
+
         let { sessionStart, duration, isPlaying, studentId } = await getEdugraphValuesForVideo(videoId)
 
         if (isPlaying) {
@@ -295,8 +296,10 @@ const saveSession = async (tabId, videoId) => {
 
         await chrome.storage.local.set(val)
 
-        if (studentId && duration > 1) {
-            console.log(data.duration)
+        const { analytics } = await chrome.storage.local.get(["analytics"])
+        console.log("CONSENT", analytics)
+
+        if (analytics == "1" && studentId && duration > 1) {
             // send to API
             fetch("https://edu-graph.vercel.app/api/saveV2", {
                 method: "POST",

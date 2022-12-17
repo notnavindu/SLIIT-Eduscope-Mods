@@ -84,17 +84,33 @@
   border-radius: 4px;
 }
 
+.--eduscope-mod-speed-container label {
+  width: 20px;
+  padding: 3px 7px;
+  font-size: 10px;
+  border: 1px solid #444;
+}
+
+.--eduscope-mod-speed-container input[type="radio"]:focus + label,
 .--eduscope-mod-radio-toolbar label:hover {
   background-color: #00182e;
 }
 
+.--eduscope-mod-speed-container input[type="radio"]:focus + label,
 .--eduscope-mod-radio-toolbar input[type="radio"]:focus + label {
   border: 2px solid rgb(0, 0, 0);
 }
 
+.--eduscope-mod-speed-container input[type="radio"]:focus + label,
 .--eduscope-mod-radio-toolbar input[type="radio"]:checked + label {
+  border: 1px solid #0388fc;
   background-color: #004b8c;
-  border-color: #0388fc;
+}
+
+.--eduscope-mod-speed-container {
+  display: flex;
+  margin-top: 10px;
+  gap: 3px;
 }
 
 /* END SELECTOR STYLES*/

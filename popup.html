@@ -20,38 +20,6 @@
         <div id="speedValue" class="--eduscope-mod-speed-value">1.00x</div>
 
         <div class="--eduscope-mod-radio-toolbar">
-          <!-- <input type="radio" id="0.5xSpeed" name="speed" value="0.5" />
-          <label for="0.5xSpeed">0.5x</label>
-
-          <input type="radio" id="1xSpeed" name="speed" value="1" />
-          <label for="1xSpeed">1x</label>
-
-          <input type="radio" id="1.25xSpeed" name="speed" value="1.25" />
-          <label for="1.25xSpeed">1.25x</label>
-
-          <input type="radio" id="1.5xSpeed" name="speed" value="1.5" />
-          <label for="1.5xSpeed">1.5x</label>
-
-          <input type="radio" id="1.75xSpeed" name="speed" value="1.75" />
-          <label for="1.75xSpeed">1.75x</label>
-
-          <br />
-
-          <input type="radio" id="2xSpeed" name="speed" value="2" />
-          <label for="2xSpeed">2x</label>
-
-          <input type="radio" id="2.5xSpeed" name="speed" value="2.5" />
-          <label for="2.5xSpeed">2.5x</label>
-
-          <input type="radio" id="3xSpeed" name="speed" value="3" />
-          <label for="3xSpeed">3x</label>
-
-          <input type="radio" id="6xSpeed" name="speed" value="6" />
-          <label for="6xSpeed">6x</label>
-
-          <input type="radio" id="16xSpeed" name="speed" value="16" />
-          <label for="16xSpeed">16x</label> -->
-
           <input
             type="range"
             min="0"
@@ -61,6 +29,32 @@
             class="--eduscope-mod-slider"
             id="speedSlider"
           />
+
+          <div class="--eduscope-mod-speed-container">
+            <input type="radio" id="0.5xSpeed" name="speed" value="0.5" />
+            <label for="0.5xSpeed">0.5</label>
+
+            <input type="radio" id="1xSpeed" name="speed" value="1" />
+            <label for="1xSpeed">1</label>
+
+            <input type="radio" id="1.25xSpeed" name="speed" value="1.25" />
+            <label for="1.25xSpeed">1.25</label>
+
+            <input type="radio" id="1.5xSpeed" name="speed" value="1.5" />
+            <label for="1.5xSpeed">1.5</label>
+
+            <input type="radio" id="1.75xSpeed" name="speed" value="1.75" />
+            <label for="1.75xSpeed">1.75</label>
+
+            <input type="radio" id="2xSpeed" name="speed" value="2" />
+            <label for="2xSpeed">2</label>
+
+            <input type="radio" id="2.5xSpeed" name="speed" value="2.5" />
+            <label for="2.5xSpeed">2.5</label>
+
+            <input type="radio" id="3xSpeed" name="speed" value="3" />
+            <label for="3xSpeed">3</label>
+          </div>
         </div>
 
         <div
@@ -105,10 +99,9 @@
         </div>
       </div>
 
-      <br />
 
       <!-- Row 2 -->
-      <div class="--eduscope-mod-option-row">
+      <div class="--eduscope-mod-option-row" style="margin-top: 10px">
         <!-- Theater mode -->
         <div style="width: 50%">
           <span> Theater Mode</span>
@@ -143,9 +136,32 @@
       </div>
     </div>
 
+    <!-- Row 3-->
+    <div class="--eduscope-mod-option-row" style="margin-top: 15px">
+      <!-- Analytics -->
+      <div style="width: 50%">
+        <span> Analytics </span>
+        <div class="--eduscope-mod-radio-toolbar">
+          <input type="radio" id="analytics-0" name="analytics" value="0" />
+          <label for="analytics-0">OFF</label>
+
+          <input type="radio" id="analytics-1" name="analytics" value="1" />
+          <label for="analytics-1">ON</label>
+        </div>
+      
+      </div>
+
+      <!-- View Analytics -->
+      <div style="width: 50%;  opacity: 0.4; ">
+        <span> Analytics (coming soon) </span>
+        <button title="Coming Soon!" disabled id="edugraph" class="--eduscope-button" style="margin-top: 10px;pointer-events: none;">View Analytics</button>
+      </div>
+    </div>
+  </div>
+
     <br />
 
-    <!-- Row 3 -->
+    <!-- Row 4 -->
     <div class="--eduscope-mod-option-row" style="margin-top: 10px">
       <div style="width: 50%">
         <button id="pip" class="--eduscope-button">Floating Window</button>

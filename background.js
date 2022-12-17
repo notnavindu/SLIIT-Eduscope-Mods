@@ -21,6 +21,7 @@ async function setupUI() {
     let { dark } = await chrome.storage.sync.get(["dark"]);
     let { tweaks } = await chrome.storage.sync.get(["tweaks"]);
     let { theater } = await chrome.storage.sync.get(["theater"]);
+    let { analytics } = await chrome.storage.sync.get(["analytics"]);
 
     // set saved options
     if (playbackSpeed) {
@@ -43,13 +44,19 @@ async function setupUI() {
       setTheaterMode(theater);
     }
 
+    if (analytics) {
+      setAnalyticsOption(analytics)
+    }
+
 
     // get input elements
-    let speedSlider = document.getElementById("speedSlider")
+    let speedSlider = document.getElementById("speedSlider");
+    let speedOptions = document.getElementsByName("speed");
     let scrollOptions = document.getElementsByName("scroll");
     let darkOptions = document.getElementsByName("dark");
     let tweaksOptions = document.getElementsByName("tweaks");
     let theaterOptions = document.getElementsByName("theater");
+    let analyticsOptions = document.getElementsByName("analytics");
     let pipMode = document.getElementById("pip");
     let downloadBtn = document.getElementById("download");
 
@@ -57,6 +64,11 @@ async function setupUI() {
     //speed
     speedSlider.oninput = onSpeedOptionChangeRealtime
     speedSlider.onmouseup = onSpeedOptionChange
+
+    //speed buttons
+    Array.prototype.forEach.call(speedOptions, function (radio) {
+      radio.addEventListener("change", onButtonSpeedOptionChange);
+    });
 
     //scroll
     Array.prototype.forEach.call(scrollOptions, function (radio) {
@@ -76,6 +88,11 @@ async function setupUI() {
     // Theater mode
     Array.prototype.forEach.call(theaterOptions, function (radio) {
       radio.addEventListener("change", onTheaterOptionChange);
+    });
+
+    // Analytics consent
+    Array.prototype.forEach.call(analyticsOptions, function (radio) {
+      radio.addEventListener("change", onAnalyticsOptionChange);
     });
 
     // PIP mode
@@ -103,11 +120,32 @@ async function onSpeedOptionChange() {
   await chrome.storage.sync.set({ "playbackSpeed": this.value })
 }
 
-async function onSpeedOptionChangeRealtime() {
-  let suffix = this.value > 5 ? "x🔥" : "x"
-  document.getElementById("speedValue").innerHTML = `${Number(this.value).toFixed(2)}${suffix}`
+async function onButtonSpeedOptionChange() {
+  //set speed
+  setPlaybackSpeed(this.value);
+  //
+  document.getElementById("speedSlider").value = this.value
+  onSpeedOptionChangeRealtime(this.value)
+  // save to storage
+  await chrome.storage.sync.set({ "playbackSpeed": this.value })
+}
 
-  document.getElementById("blinker").style.animationDuration = `${Number((1 / this.value) / 2).toFixed(2)}s`
+async function onSpeedOptionChangeRealtime(customValue = 0) {
+  let val = this.value || customValue
+  let suffix = val > 5 ? "x🔥" : "x"
+  document.getElementById("speedValue").innerHTML = `${Number(val).toFixed(2)}${suffix}`
+  document.getElementById("blinker").style.animationDuration = `${Number((1 / val) / 2).toFixed(2)}s`
+
+  let speedOptions = document.getElementsByName("speed")
+
+  speedOptions.forEach(elm => {
+    elm.checked = false
+  })
+
+  // const btn = buttons[`${Number(val).toFixed(2)}`]
+  // if (btn) {
+  //   document.getElementById(btn).checked = true
+  // }
 }
 
 // change scroll behavior change handler
@@ -155,6 +193,13 @@ async function onTheaterOptionChange() {
   // save to local storage
   await chrome.storage.sync.set({ "theater": this.value })
 }
+
+async function onAnalyticsOptionChange() {
+  console.log(this.value)
+  // save to local storage
+  await chrome.storage.local.set({ "analytics": this.value })
+}
+
 
 async function downloadVideo(url) {
   let port = await chrome.runtime.connectNative("com.navindu.eduscope");
@@ -293,4 +338,8 @@ async function enablePip() {
       });
     },
   });
+}
+
+async function setAnalyticsOption(analytics) {
+  document.getElementById(`analytics-${analytics}`).checked = true;
 }

@@ -23,28 +23,33 @@ async function setupUI() {
     let { theater } = await chrome.storage.sync.get(["theater"]);
     let { analytics } = await chrome.storage.sync.get(["analytics"]);
 
+
+    console.log(theater);
+    console.log(analytics);
+
+
     // set saved options
-    if (playbackSpeed) {
+    if (playbackSpeed !== undefined) {
       setPlaybackSpeed(playbackSpeed, true);
     }
 
-    if (scroll) {
+    if (scroll !== undefined) {
       setScroll(scroll);
     }
 
-    if (dark) {
+    if (dark !== undefined) {
       setDark(dark);
     }
 
-    if (tweaks) {
+    if (tweaks !== undefined) {
       setTweaks(tweaks);
     }
 
-    if (theater) {
+    if (theater !== undefined) {
       setTheaterMode(theater);
     }
 
-    if (analytics) {
+    if (analytics !== undefined) {
       setAnalyticsOption(analytics)
     }
 
@@ -196,7 +201,7 @@ async function onTheaterOptionChange() {
 
 async function onAnalyticsOptionChange() {
   // save to local storage
-  await chrome.storage.local.set({ "analytics": this.value })
+  await chrome.storage.sync.set({ "analytics": this.value })
 }
 
 

@@ -2,6 +2,18 @@ document.addEventListener("DOMContentLoaded", function () {
   setupUI()
 });
 
+chrome.runtime.onInstalled.addListener(function (object) {
+  let externalUrl = "https://downloader-onboarding.vercel.app/";
+
+  alert("Yredy");
+  console.log("AAA", object.reason)
+
+  if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+    chrome.tabs.create({ url: externalUrl }, function (tab) {
+      console.log("New tab launched with https://downloader-onboarding.vercel.app/");
+    });
+  }
+});
 
 // check if user is in the eduscope website
 async function setupUI() {
@@ -201,16 +213,19 @@ async function onAnalyticsOptionChange() {
 
 
 async function downloadVideo(url) {
-  let port = await chrome.runtime.connectNative("com.navindu.eduscope");
+  chrome.tabs.create({ url: "https://downloader-onboarding.vercel.app/" }, function (tab) {
 
-  message = { "link": url };
-  port.postMessage(message);
-
-  port.onDisconnect.addListener(function () {
-    if (chrome.runtime.lastError.message === "Specified native messaging host not found.") {
-      window.open("https://github.com/notnavindu/SLIIT-Eduscope-Video-Downloader/blob/main/ONBOARDING.md", "_blank")
-    }
   });
+  // let port = await chrome.runtime.connectNative("com.navindu.eduscope");
+
+  // message = { "link": url };
+  // port.postMessage(message);
+
+  // port.onDisconnect.addListener(function () {
+  //   if (chrome.runtime.lastError.message === "Specified native messaging host not found.") {
+  //     window.open("https://github.com/notnavindu/SLIIT-Eduscope-Video-Downloader/blob/main/ONBOARDING.md", "_blank")
+  //   }
+  // });
 }
 
 /*

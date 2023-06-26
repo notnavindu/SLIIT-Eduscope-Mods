@@ -311,7 +311,9 @@ const saveSession = async (tabId, videoId) => {
 
         await chrome.storage.local.set(val)
 
-        const { analytics } = await chrome.storage.local.get(["analytics"])
+        const { analytics } = await chrome.storage.sync.get(["analytics"])
+
+        console.log("debug:", analytics)
 
         if (analytics == "1" && studentId && duration > 1) {
             // send to API

@@ -2,18 +2,15 @@ document.addEventListener("DOMContentLoaded", function () {
   setupUI()
 });
 
-chrome.runtime.onInstalled.addListener(function (object) {
-  let externalUrl = "https://downloader-onboarding.vercel.app/";
+// chrome.runtime.onInstalled.addListener(function (object) {
+//   let externalUrl = "https://downloader-onboarding.vercel.app/";
 
-  alert("Yredy");
-  console.log("AAA", object.reason)
-
-  if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    chrome.tabs.create({ url: externalUrl }, function (tab) {
-      console.log("New tab launched with https://downloader-onboarding.vercel.app/");
-    });
-  }
-});
+//   if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+//     chrome.tabs.create({ url: externalUrl }, function (tab) {
+//       console.log("New tab launched with https://downloader-onboarding.vercel.app/");
+//     });
+//   }
+// });
 
 // check if user is in the eduscope website
 async function setupUI() {
@@ -75,7 +72,7 @@ async function setupUI() {
     let theaterOptions = document.getElementsByName("theater");
     let analyticsOptions = document.getElementsByName("analytics");
     let pipMode = document.getElementById("pip");
-    let downloadBtn = document.getElementById("download");
+    // let downloadBtn = document.getElementById("download");
 
     //add onclick handlers
     //speed
@@ -116,7 +113,7 @@ async function setupUI() {
     pipMode.addEventListener("click", enablePip);
 
     // download button
-    downloadBtn.addEventListener("click", () => downloadVideo(pageUrl));
+    // downloadBtn.addEventListener("click", () => downloadVideo(pageUrl));
 
   }
 }

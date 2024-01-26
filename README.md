@@ -1,4 +1,4 @@
-# SLIIT Eduscope Mod v3.4.4
+# SLIIT Eduscope Mod v3.5.0
 
 A Simple Chrome Extension with a few simple mods for SLIIT's Eduscope video platform.
 
@@ -7,7 +7,6 @@ A Simple Chrome Extension with a few simple mods for SLIIT's Eduscope video plat
 - Change video playback speed (0.5x, 1x, 2x, 6x)
 - Theater mode
 - Save video playback time
-- Download videos
 - Prevent the page from scrolling when the spacebar is pressed
 
 ### Firefox

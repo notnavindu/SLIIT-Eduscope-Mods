@@ -1,21 +1,21 @@
 let studentId;
 let saveLoop;
-const action_ver = 1
+const action_ver = 2
 
-// chrome.runtime.onInstalled.addListener(async function (object) {
-//     let externalUrl = "https://downloader-onboarding.vercel.app/";
+chrome.runtime.onInstalled.addListener(async function (object) {
+    let externalUrl = "https://edu-graph.vercel.app/apology";
 
-//     const ver = (await chrome.storage.local.get(`last-action-version`))[`last-action-version`] ?? 0
+    const ver = (await chrome.storage.local.get(`last-action-version`))[`last-action-version`] ?? 0
 
-//     if (action_ver > ver && object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+    if (action_ver > ver && object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
 
-//         chrome.storage.local.set({ 'last-action-version': action_ver })
+        chrome.storage.local.set({ 'last-action-version': action_ver })
 
-//         chrome.tabs.create({ url: externalUrl }, function (tab) {
-//             console.log("New tab launched with https://downloader-onboarding.vercel.app/");
-//         });
-//     }
-// });//
+        chrome.tabs.create({ url: externalUrl }, function (tab) {
+            console.log("New tab launched with https://edu-graph.vercel.app/apology");
+        });
+    }
+});//
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete") {

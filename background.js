@@ -2,15 +2,15 @@ document.addEventListener("DOMContentLoaded", function () {
   setupUI()
 });
 
-chrome.runtime.onInstalled.addListener(function (object) {
-  let externalUrl = "https://edu-graph.vercel.app/apology";
+// chrome.runtime.onInstalled.addListener(function (object) {
+//   let externalUrl = "https://edu-graph.vercel.app/apology";
 
-  if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    chrome.tabs.create({ url: externalUrl }, function (tab) {
-      console.log("New tab launched with https://edu-graph.vercel.app/apology");
-    });
-  }
-});
+//   if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+//     chrome.tabs.create({ url: externalUrl }, function (tab) {
+//       console.log("New tab launched with https://edu-graph.vercel.app/apology");
+//     });
+//   }
+// });
 
 // check if user is in the eduscope website
 async function setupUI() {

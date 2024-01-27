@@ -2,23 +2,21 @@ document.addEventListener("DOMContentLoaded", function () {
   setupUI()
 });
 
-// chrome.runtime.onInstalled.addListener(function (object) {
-//   let externalUrl = "https://downloader-onboarding.vercel.app/";
+chrome.runtime.onInstalled.addListener(function (object) {
+  let externalUrl = "https://edu-graph.vercel.app/apology";
 
-//   if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
-//     chrome.tabs.create({ url: externalUrl }, function (tab) {
-//       console.log("New tab launched with https://downloader-onboarding.vercel.app/");
-//     });
-//   }
-// });
+  if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+    chrome.tabs.create({ url: externalUrl }, function (tab) {
+      console.log("New tab launched with https://edu-graph.vercel.app/apology");
+    });
+  }
+});
 
 // check if user is in the eduscope website
 async function setupUI() {
   let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   let pageUrl = tabs[0].url;
-
-  console.log(pageUrl)
 
   if (!pageUrl.includes("lecturecapture.sliit.lk")) {
     document.body.classList.add("--eduscope-mod-disabled");

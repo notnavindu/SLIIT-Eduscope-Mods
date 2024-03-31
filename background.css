@@ -77,11 +77,15 @@
   width: 30px;
   margin-bottom: 10px;
   background-color: #000;
-  padding: 5px 10px;
+  padding: 5px 7px;
   font-size: 13px;
   text-align: center;
   border: 2px solid #444;
   border-radius: 4px;
+}
+
+.--eduscope-mod-radio-toolbar-attention-lock label:not(:first-of-type) {
+  width: 10px;
 }
 
 .--eduscope-mod-speed-container label {

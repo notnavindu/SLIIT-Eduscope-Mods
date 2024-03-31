@@ -13,8 +13,10 @@ The downloader did stop working due to a stupid bug (that I obviously wrote). HO
 - Save video playback time
 - Prevent the page from scrolling when the spacebar is pressed
 
-### Firefox
+### Supported Browsers
 
-Latest version (v3) is not tested or ported to firefox yet. Waiting till Sem 1 finals are over :/
+- Chrome
+- Brave
+- Edge
 
 Did anyone ask for this? No.

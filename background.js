@@ -2,16 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
   setupUI()
 });
 
-// chrome.runtime.onInstalled.addListener(function (object) {
-//   let externalUrl = "https://edu-graph.vercel.app/apology";
-
-//   if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
-//     chrome.tabs.create({ url: externalUrl }, function (tab) {
-//       console.log("New tab launched with https://edu-graph.vercel.app/apology");
-//     });
-//   }
-// });
-
 // check if user is in the eduscope website
 async function setupUI() {
   let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -29,10 +19,7 @@ async function setupUI() {
     let { tweaks } = await chrome.storage.sync.get(["tweaks"]);
     let { theater } = await chrome.storage.sync.get(["theater"]);
     let { analytics } = await chrome.storage.sync.get(["analytics"]);
-
-
-    console.log(theater);
-    console.log(analytics);
+    let { attention } = await chrome.storage.sync.get(["attention"]);
 
 
     // set saved options
@@ -60,6 +47,11 @@ async function setupUI() {
       setAnalyticsOption(analytics)
     }
 
+    console.log("🚀 ~ setupUI ~ attention:", attention)
+    if (attention !== undefined) {
+      setAttentionLock(attention)
+    }
+
 
     // get input elements
     let speedSlider = document.getElementById("speedSlider");
@@ -70,6 +62,7 @@ async function setupUI() {
     let theaterOptions = document.getElementsByName("theater");
     let analyticsOptions = document.getElementsByName("analytics");
     let pipMode = document.getElementById("pip");
+    let attentionOptions = document.getElementsByName("attention");
     // let downloadBtn = document.getElementById("download");
 
     //add onclick handlers
@@ -101,6 +94,16 @@ async function setupUI() {
     Array.prototype.forEach.call(theaterOptions, function (radio) {
       radio.addEventListener("change", onTheaterOptionChange);
     });
+
+    // Attention Lock
+    Array.prototype.forEach.call(attentionOptions, function (radio) {
+      radio.addEventListener("change", onAttentionOptionChange);
+    });
+
+    // Analytics consent (Disabled for now)
+    // Array.prototype.forEach.call(analyticsOptions, function (radio) {
+    //   radio.addEventListener("change", onAnalyticsOptionChange);
+    // });
 
     // Analytics consent
     Array.prototype.forEach.call(analyticsOptions, function (radio) {
@@ -153,11 +156,6 @@ async function onSpeedOptionChangeRealtime(customValue = 0) {
   speedOptions.forEach(elm => {
     elm.checked = false
   })
-
-  // const btn = buttons[`${Number(val).toFixed(2)}`]
-  // if (btn) {
-  //   document.getElementById(btn).checked = true
-  // }
 }
 
 // change scroll behavior change handler
@@ -211,21 +209,18 @@ async function onAnalyticsOptionChange() {
   await chrome.storage.sync.set({ "analytics": this.value })
 }
 
+async function onAttentionOptionChange() {
+  setAttentionLock(this.value);
+
+  await chrome.storage.sync.set({ "attention": this.value })
+
+}
+
 
 async function downloadVideo(url) {
   chrome.tabs.create({ url: "https://downloader-onboarding.vercel.app/" }, function (tab) {
 
   });
-  // let port = await chrome.runtime.connectNative("com.navindu.eduscope");
-
-  // message = { "link": url };
-  // port.postMessage(message);
-
-  // port.onDisconnect.addListener(function () {
-  //   if (chrome.runtime.lastError.message === "Specified native messaging host not found.") {
-  //     window.open("https://github.com/notnavindu/SLIIT-Eduscope-Video-Downloader/blob/main/ONBOARDING.md", "_blank")
-  //   }
-  // });
 }
 
 /*
@@ -320,7 +315,6 @@ async function setTheaterMode(state) {
   let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   if (state == 0) {
-
     chrome.scripting.executeScript({
       target: { tabId: tabs[0].id, allFrames: true },
       files: ['./scripts/theaterRemove.js'],
@@ -334,6 +328,31 @@ async function setTheaterMode(state) {
   }
 
   document.getElementById(`theater-${state}`).checked = true;
+}
+
+// set Attention Lock mode
+async function setAttentionLock(state) {
+  let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  if (state == 0) {
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      files: ['./scripts/attentionRemove.js'],
+    });
+  } else {
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id, allFrames: true },
+      args: [{ attentionVideoId: state }],
+      func: vars => Object.assign(self, vars)
+    }, () => {
+      chrome.scripting.executeScript({
+        target: { tabId: tabs[0].id, allFrames: true },
+        files: ['./scripts/attentionSet.js'],
+      });
+    });
+  }
+
+  document.getElementById(`attention-${state}`).checked = true;
 }
 
 async function enablePip() {
@@ -357,3 +376,6 @@ async function enablePip() {
 async function setAnalyticsOption(analytics) {
   document.getElementById(`analytics-${analytics}`).checked = true;
 }
+
+
+

@@ -1,9 +1,9 @@
 let studentId;
 let saveLoop;
-const action_ver = 2
+const action_ver = 3
 
 chrome.runtime.onInstalled.addListener(async function (object) {
-    let externalUrl = "https://edu-graph.vercel.app/apology";
+    let externalUrl = "https://edu-graph.vercel.app/attention-lock";
 
     const ver = (await chrome.storage.local.get(`last-action-version`))[`last-action-version`] ?? 0
 
@@ -12,7 +12,7 @@ chrome.runtime.onInstalled.addListener(async function (object) {
         chrome.storage.local.set({ 'last-action-version': action_ver })
 
         chrome.tabs.create({ url: externalUrl }, function (tab) {
-            console.log("New tab launched with https://edu-graph.vercel.app/apology");
+            console.log("New tab launched with https://edu-graph.vercel.app/attention-lock");
         });
     }
 });//
@@ -249,7 +249,8 @@ chrome.runtime.onMessage.addListener(
 
         if (request.autoSave) {
             sendResponse({ recieved: true });
-            saveSession(sender.tab.id, videoId)
+            // ANALYTICS DISABLED
+            // saveSession(sender.tab.id, videoId)
         }
 
         return true;

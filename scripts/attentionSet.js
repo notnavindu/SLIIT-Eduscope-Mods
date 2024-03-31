@@ -1,7 +1,8 @@
 (() => {
-    console.log(self.attentionVideoId)
     const embedIds = {
-        1: 'IMKAK3iJB0Q?si=LuBc4_Tl_Z3DgfZp'
+        1: 'IMKAK3iJB0Q?si=LuBc4_Tl_Z3DgfZp',
+        2: 'SuK5LUWj9do?si=G7JjfQP7vVKOZKH5',
+        3: 'ZF4DA2MEVqM?si=TsNe07wvXPQgGE0T'
     }
     let eplayer = document.getElementById("eplayer_iframe");
 

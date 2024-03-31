@@ -332,6 +332,7 @@ async function setTheaterMode(state) {
 
 // set Attention Lock mode
 async function setAttentionLock(state) {
+  console.log("🚀 ~ setAttentionLock ~ state:", state)
   let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
   if (state == 0) {

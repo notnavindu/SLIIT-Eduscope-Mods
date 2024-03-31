@@ -20,7 +20,7 @@
         }
 
         node.innerHTML = `
-            <iframe class="youtube-video" src="https://www.youtube.com/embed/${embedIds[self.attentionVideoId]}&amp;controls=1&amp;disablekb=1&amp;fs=0&amp;iv_load_policy=3&amp;loop=1&amp;autoplay=1;&amp;playlist=IMKAK3iJB0Q" 
+            <iframe class="youtube-video" src="https://www.youtube.com/embed/${embedIds[self.attentionVideoId]}&amp;controls=1&amp;disablekb=1&amp;fs=0&amp;iv_load_policy=3&amp;loop=1&amp;autoplay=1&amp;playlist=${embedIds[self.attentionVideoId].split("?")[0]}" 
                 title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" 
                 style="
                     aspect-ratio: 1/2;
